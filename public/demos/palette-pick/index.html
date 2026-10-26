@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palette Pick</title>
+<style>
+  :root { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff8f3; color: #2a1d17; padding: 24px; }
+  .wrap { max-width: 920px; margin: 0 auto; display: grid; gap: 20px; }
+  h1 { margin: 0; font-size: 22px; }
+  p { margin: 4px 0 0; color: #6b5a50; font-size: 14px; line-height: 1.5; }
+  .drop { border: 2px dashed #f0b89a; border-radius: 18px; padding: 28px; text-align: center; background: #fff; cursor: pointer; transition: background .2s; }
+  .drop.over { background: #ffeadd; }
+  .drop strong { display: block; font-size: 16px; margin-bottom: 4px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  canvas { width: 100%; border-radius: 14px; background: #fff; box-shadow: 0 8px 24px rgba(42,29,23,.12); }
+  .swatches { display: grid; gap: 10px; }
+  .swatch { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 14px; padding: 8px; box-shadow: 0 2px 8px rgba(42,29,23,.08); }
+  .chip { width: 56px; height: 56px; border-radius: 10px; flex: none; border: 1px solid rgba(0,0,0,.06); }
+  .hex { font-family: ui-monospace, Menlo, monospace; font-size: 15px; font-weight: 600; }
+  .share { font-size: 12px; color: #8a776b; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+  .primary { background: #ea580c; color: #fff; } .secondary { background: #ffe3d3; color: #7c2d12; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  label { font-size: 13px; font-weight: 600; }
+  select { font: inherit; padding: 6px 8px; border-radius: 10px; border: 1px solid #f0c9b4; }
+  button:focus-visible, select:focus-visible, .drop:focus-visible { outline: 3px solid #fdba74; outline-offset: 2px; }
+  .sr { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h1>Palette Pick</h1>
+    <p>Choose a photo to find its main colours. Your photo stays on your device.</p>
+  </div>
+  <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a photo">
+    <strong>Drop a photo here, or click to choose one</strong>
+    <span class="share">JPG, PNG, WebP or GIF</span>
+    <input class="sr" type="file" id="file" accept="image/*">
+  </div>
+  <div class="row">
+    <button class="secondary" id="sample">Use a sample picture</button>
+    <label for="k">Colours to find</label>
+    <select id="k"><option>4</option><option selected>6</option><option>8</option></select>
+    <button class="primary" id="export" disabled>Download palette</button>
+  </div>
+  <div class="grid">
+    <canvas id="preview" width="600" height="400" aria-label="Your picture"></canvas>
+    <div class="swatches" id="swatches" aria-live="polite"><p>Your colours will appear here.</p></div>
+  </div>
+</div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const canvas = $("preview"), ctx = canvas.getContext("2d", { willReadFrequently: true });
+  let palette = [];
+
+  const toHex = (c) => "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("").toUpperCase();
+
+  function drawImageFit(img) {
+    const maxW = 600, ratio = img.height / img.width;
+    canvas.width = maxW; canvas.height = Math.max(1, Math.round(maxW * ratio));
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    analyse();
+  }
+
+  function drawSample() {
+    canvas.width = 600; canvas.height = 400;
+    const sky = ctx.createLinearGradient(0, 0, 0, 260);
+    sky.addColorStop(0, "#1e3a8a"); sky.addColorStop(0.6, "#f472b6"); sky.addColorStop(1, "#fdba74");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, 600, 260);
+    ctx.fillStyle = "#fde68a"; ctx.beginPath(); ctx.arc(420, 210, 60, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#0f766e"; ctx.fillRect(0, 260, 600, 140);
+    ctx.fillStyle = "#134e4a";
+    for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(i * 120 - 40, 260); ctx.lineTo(i * 120 + 40, 150 + (i % 2) * 40); ctx.lineTo(i * 120 + 120, 260); ctx.fill(); }
+    analyse();
+  }
+
+  function kmeans(pixels, k) {
+    const rand = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+    let centers = [];
+    for (let i = 0; i < k; i++) centers.push(pixels[Math.floor(rand() * pixels.length)].slice());
+    let assign = new Array(pixels.length).fill(0);
+    for (let iter = 0; iter < 12; iter++) {
+      const sums = centers.map(() => [0, 0, 0, 0]);
+      for (let p = 0; p < pixels.length; p++) {
+        const px = pixels[p]; let best = 0, bestD = Infinity;
+        for (let c = 0; c < k; c++) {
+          const d = (px[0] - centers[c][0]) ** 2 + (px[1] - centers[c][1]) ** 2 + (px[2] - centers[c][2]) ** 2;
+          if (d < bestD) { bestD = d; best = c; }
+        }
+        assign[p] = best; const s = sums[best]; s[0] += px[0]; s[1] += px[1]; s[2] += px[2]; s[3]++;
+      }
+      centers = centers.map((c, i) => sums[i][3] ? [sums[i][0] / sums[i][3], sums[i][1] / sums[i][3], sums[i][2] / sums[i][3]] : pixels[Math.floor(rand() * pixels.length)].slice());
+    }
+    const counts = centers.map(() => 0); assign.forEach((a) => counts[a]++);
+    return centers.map((c, i) => ({ color: c, share: counts[i] / pixels.length })).filter((x) => x.share > 0).sort((a, b) => b.share - a.share);
+  }
+
+  function analyse() {
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = [], step = Math.max(1, Math.floor((data.length / 4) / 6000));
+    for (let i = 0; i < data.length; i += 4 * step) if (data[i + 3] > 128) pixels.push([data[i], data[i + 1], data[i + 2]]);
+    if (!pixels.length) return;
+    palette = kmeans(pixels, +$("k").value);
+    const list = $("swatches"); list.innerHTML = "";
+    palette.forEach((p) => {
+      const hex = toHex(p.color);
+      const el = document.createElement("div"); el.className = "swatch";
+      el.innerHTML = '<div class="chip"></div><div><div class="hex"></div><div class="share"></div></div>';
+      el.querySelector(".chip").style.background = hex;
+      el.querySelector(".hex").textContent = hex;
+      el.querySelector(".share").textContent = Math.round(p.share * 100) + "% of the picture · rgb(" + p.color.map(Math.round).join(", ") + ")";
+      list.appendChild(el);
+    });
+    $("export").disabled = false;
+    document.body.dataset.colors = String(palette.length);
+  }
+
+  function loadFile(file) {
+    if (!file || !file.type.startsWith("image/")) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { drawImageFit(img); URL.revokeObjectURL(url); };
+    img.src = url;
+  }
+
+  const drop = $("drop");
+  drop.addEventListener("click", () => $("file").click());
+  drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } });
+  $("file").addEventListener("change", (e) => loadFile(e.target.files[0]));
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); loadFile(e.dataTransfer.files[0]); });
+  $("sample").addEventListener("click", drawSample);
+  $("k").addEventListener("change", () => palette.length && analyse());
+  $("export").addEventListener("click", () => {
+    const text = "Palette from Palette Pick\n\n" + palette.map((p) => toHex(p.color) + "  (" + Math.round(p.share * 100) + "%)").join("\n") + "\n";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" })); a.download = "palette.txt";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+  drawSample();
+})();
+</script>
+</body>
+</html>
