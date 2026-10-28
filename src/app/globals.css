@@ -57,6 +57,8 @@
   /* Mock app chrome inside phone previews (the previewed app's own colours). */
   --color-app-blue: #1185fe;
   --color-app-line: #eef1f4;
+  --color-app-banner: #cfe3d4;
+  --color-app-banner-dot: #9bc4a6;
 
   --font-sans: var(--font-geist), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
