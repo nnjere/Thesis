@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { getToolAdapter } from "@/lib/tools";
+import { KIND_INFO } from "./labels";
 import { CATEGORIES, getProjectByRepo, listProjects, resolveAlternatives } from ".";
 
 const projects = listProjects();
@@ -50,6 +51,10 @@ describe("catalog honesty invariants", () => {
       expect(resolveAlternatives(p).length, p.slug).toBe(p.alternatives?.length ?? 0);
       expect(CATEGORIES.map((c) => c.id)).toContain(p.category);
     }
+  });
+
+  it("gives every project a design kind", () => {
+    for (const p of projects) expect(KIND_INFO[p.kind], p.slug).toBeDefined();
   });
 
   it("covers every category and project type", () => {

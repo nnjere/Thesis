@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SimulatedTag, StatusBadge } from "@/components/Badges";
-import { ProjectArt } from "@/components/ProjectArt";
-import type { PreviewSpec, RunStatus } from "@/lib/catalog/types";
+import { KindTile } from "@/components/ProjectCard";
+import { Icon } from "@/components/ui/Icon";
+import type { ProjectKind, RunStatus } from "@/lib/catalog/types";
 import type { PublicSession } from "@/lib/sandbox/types";
 import type { ToolSpec } from "@/lib/tools/types";
 import { TechnicalDetails } from "./TechnicalDetails";
@@ -17,7 +18,7 @@ interface LaunchProject {
   status: RunStatus;
   homepage?: string;
   repoUrl?: string;
-  preview: PreviewSpec;
+  kind: ProjectKind;
 }
 
 interface Props {
@@ -158,13 +159,13 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
           : "This session has ended.";
     return (
       <Shell>
-        <div className="mx-auto max-w-xl rounded-3xl border border-black/5 bg-white p-8 text-center">
-          <p className="text-4xl" aria-hidden>⏸</p>
-          <h1 className="mt-3 text-2xl font-bold">Session ended</h1>
+        <div className="mx-auto max-w-xl rounded-card border border-border bg-surface p-8 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-card bg-hover text-ink-2"><Icon name="pause" size={22} /></span>
+          <h1 className="mt-3 text-2xl font-[650]">Session ended</h1>
           <p className="mt-2 text-muted">{reason} Anything you didn&apos;t download has been cleared.</p>
           <div className="mt-6 flex justify-center gap-3">
-            <button onClick={restart} className="rounded-2xl bg-brand-600 px-5 py-3 font-semibold text-white hover:bg-brand-700">Start again</button>
-            <Link href={`/projects/${project.slug}`} className="rounded-2xl border border-black/10 px-5 py-3 font-semibold">Back to project</Link>
+            <button onClick={restart} className="rounded-md bg-primary px-5 py-3 font-semibold text-white hover:bg-primary-ink">Start again</button>
+            <Link href={`/projects/${project.slug}`} className="rounded-md border border-border-strong px-5 py-3 font-semibold">Back to project</Link>
           </div>
         </div>
       </Shell>
@@ -177,31 +178,31 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
   if (result.kind === "simulated-complete") {
     return (
       <Shell>
-        <div className="mx-auto max-w-2xl overflow-hidden rounded-3xl border border-amber-200 bg-white">
-          <div className="bg-amber-50 px-6 py-4 text-amber-900">
+        <div className="mx-auto max-w-2xl overflow-hidden rounded-card border border-border bg-surface">
+          <div className="bg-note-bg px-6 py-4 text-note-ink">
             <div className="flex items-center gap-2">
               <SimulatedTag />
               <p className="font-semibold">Simulation complete: nothing was actually run</p>
             </div>
           </div>
           <div className="p-6 sm:p-8">
-            <h1 className="text-2xl font-bold">This is where {project.name} would open</h1>
-            <p className="mt-3 text-ink/85">
+            <h1 className="text-2xl font-[650]">This is where {project.name} would open</h1>
+            <p className="mt-3 text-ink-2">
               Real sandboxes aren&apos;t connected in this prototype, so we haven&apos;t downloaded or started {project.name}. In a full
               version, you would now see <strong>{result.wouldShow}</strong>.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               {result.hostedAlternative && (
-                <a href={result.hostedAlternative} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-ink px-5 py-3 font-semibold text-white hover:bg-black">
+                <a href={result.hostedAlternative} target="_blank" rel="noopener noreferrer" className="rounded-md bg-ink px-5 py-3 font-semibold text-white hover:bg-ink-2">
                   Use the official version ↗
                 </a>
               )}
               {project.repoUrl && (
-                <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-black/10 px-5 py-3 font-semibold">
+                <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="rounded-md border border-border-strong px-5 py-3 font-semibold">
                   See it on GitHub ↗
                 </a>
               )}
-              <Link href="/explore?runnable=1" className="rounded-2xl px-5 py-3 font-semibold text-brand-700 hover:underline">
+              <Link href="/explore?runnable=1" className="rounded-md px-5 py-3 font-semibold text-primary hover:underline">
                 Find something you can try for real
               </Link>
             </div>
@@ -213,34 +214,34 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
   }
 
   return (
-    <div className={fullscreen ? "fixed inset-0 z-50 flex flex-col bg-white" : "mx-auto max-w-6xl px-4 pt-6 sm:px-6"}>
-      <div className={`flex flex-wrap items-center justify-between gap-3 ${fullscreen ? "border-b border-black/10 px-4 py-2" : ""}`}>
+    <div className={fullscreen ? "fixed inset-0 z-50 flex flex-col bg-surface" : "mx-auto max-w-6xl px-4 pt-6 sm:px-6"}>
+      <div className={`flex flex-wrap items-center justify-between gap-3 ${fullscreen ? "border-b border-border-strong px-4 py-2" : ""}`}>
         <div className="flex min-w-0 items-center gap-3">
           <Link href={`/projects/${project.slug}`} className="text-sm font-semibold text-muted hover:text-ink">← {fullscreen ? "" : "Back"}</Link>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-lg font-bold">{project.name}</h1>
+              <h1 className="truncate text-lg font-[650]">{project.name}</h1>
               <StatusBadge status={project.status} />
             </div>
             <p className="flex items-center gap-1.5 text-xs text-muted">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden /> Running in a private sandbox in your browser
+              <span className="h-2 w-2 rounded-full bg-primary" aria-hidden /> Running in a private sandbox in your browser
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {result.kind === "embedded-web-app" && (
-            <button onClick={() => setFullscreen((f) => !f)} className="rounded-full border border-black/10 px-3 py-1.5 text-sm font-semibold hover:bg-black/[0.03]">
+            <button onClick={() => setFullscreen((f) => !f)} className="rounded-full border border-border-strong px-3 py-1.5 text-sm font-semibold hover:bg-ink-2/[0.03]">
               {fullscreen ? "Exit full screen" : "Full screen"}
             </button>
           )}
-          <button onClick={endSession} className="rounded-full border border-black/10 px-3 py-1.5 text-sm font-semibold text-muted hover:text-ink">
+          <button onClick={endSession} className="rounded-full border border-border-strong px-3 py-1.5 text-sm font-semibold text-muted hover:text-ink">
             End session
           </button>
         </div>
       </div>
 
       {result.kind === "embedded-web-app" ? (
-        <div className={fullscreen ? "flex-1" : "mt-4 overflow-hidden rounded-3xl border border-black/10 bg-white shadow-sm"}>
+        <div className={fullscreen ? "flex-1" : "mt-4 overflow-hidden rounded-card border border-border-strong bg-surface shadow-sm"}>
           <iframe
             title={`${project.name}, running in a sandbox`}
             src={result.url}
@@ -276,7 +277,7 @@ function LoadingCard({ project, session }: { project: LaunchProject; session: Pu
   return (
     <div className="mx-auto max-w-xl">
       {session?.simulated && (
-        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="note">
+        <div className="mb-4 flex items-start gap-3 rounded-md border border-border bg-note-bg px-4 py-3 text-sm text-note-ink" role="note">
           <SimulatedTag />
           <p>
             <strong>This is a simulation.</strong> No real sandbox is connected, so nothing from {project.name} is being downloaded or
@@ -284,18 +285,14 @@ function LoadingCard({ project, session }: { project: LaunchProject; session: Pu
           </p>
         </div>
       )}
-      <div className="overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm" aria-busy="true">
-        <div className="relative">
-          <ProjectArt seed={project.slug} preview={project.preview} className="aspect-[16/7] w-full opacity-90" showGlyph={false} />
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="pulse-ring relative grid h-16 w-16 place-items-center rounded-full bg-white text-brand-600 shadow-lg">
-              <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-600 motion-reduce:animate-none" />
-            </span>
-          </div>
+      <div className="overflow-hidden rounded-card border border-border bg-surface shadow-sm" aria-busy="true">
+        <div className="dot-grid flex aspect-[16/7] w-full items-center justify-center gap-4">
+          <KindTile project={project} size={64} />
+          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary motion-reduce:animate-none" />
         </div>
         <div className="p-6 sm:p-8">
           <p className="text-sm font-semibold text-muted">Starting {project.name}</p>
-          <p className="mt-1 text-2xl font-bold" aria-live="polite">
+          <p className="mt-1 text-2xl font-[650]" aria-live="polite">
             {active?.label ?? "Getting the project ready…"}
           </p>
           <ol className="mt-6 space-y-3">
@@ -320,15 +317,15 @@ const PLACEHOLDER_STEPS = [
 ];
 
 function StepIcon({ status }: { status: string }) {
-  if (status === "done") return <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-500 text-xs font-bold text-white" aria-label="Done">✓</span>;
-  if (status === "failed") return <span className="grid h-6 w-6 place-items-center rounded-full bg-rose-500 text-xs font-bold text-white" aria-label="Stopped">!</span>;
+  if (status === "done") return <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-xs font-bold text-white" aria-label="Done">✓</span>;
+  if (status === "failed") return <span className="grid h-6 w-6 place-items-center rounded-full bg-diff-del-ink text-xs font-bold text-white" aria-label="Stopped">!</span>;
   if (status === "active")
     return (
       <span className="grid h-6 w-6 place-items-center" aria-label="In progress">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600 motion-reduce:animate-none" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary/20 border-t-primary motion-reduce:animate-none" />
       </span>
     );
-  return <span className="h-6 w-6 rounded-full border-2 border-black/10" aria-label="Waiting" />;
+  return <span className="h-6 w-6 rounded-full border-2 border-border-strong" aria-label="Waiting" />;
 }
 
 function FailureCard(props: {
@@ -342,21 +339,21 @@ function FailureCard(props: {
 }) {
   const { project, alternatives } = props;
   return (
-    <div className="mx-auto max-w-2xl overflow-hidden rounded-3xl border border-black/5 bg-white">
+    <div className="mx-auto max-w-2xl overflow-hidden rounded-card border border-border bg-surface">
       {props.simulated && (
-        <div className="flex items-center gap-2 bg-amber-50 px-6 py-3 text-sm text-amber-900">
+        <div className="flex items-center gap-2 bg-note-bg px-6 py-3 text-sm text-note-ink">
           <SimulatedTag /> Simulated result. This explains what would likely happen; nothing was actually run.
         </div>
       )}
       <div className="p-6 sm:p-8">
-        <p className="text-4xl" aria-hidden>🧩</p>
-        <h1 className="mt-3 text-2xl font-bold">{props.headline}</h1>
-        <p className="mt-3 text-ink/85">{props.explanation}</p>
-        <p className="mt-3 text-ink/85">This isn&apos;t something you did wrong. Here&apos;s what you can do instead:</p>
+        <span className="flex h-12 w-12 items-center justify-center rounded-card bg-note-bg text-note-ink"><Icon name="alert" size={22} /></span>
+        <h1 className="mt-3 text-2xl font-[650]">{props.headline}</h1>
+        <p className="mt-3 text-ink-2">{props.explanation}</p>
+        <p className="mt-3 text-ink-2">This isn&apos;t something you did wrong. Here&apos;s what you can do instead:</p>
         <ul className="mt-5 space-y-3">
           {project.homepage && (
             <li>
-              <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-2xl border border-black/10 px-4 py-3 hover:bg-black/[0.02]">
+              <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-md border border-border-strong px-4 py-3 hover:bg-ink-2/[0.02]">
                 <span>
                   <span className="font-semibold">Use the official version</span>
                   <span className="block text-sm text-muted">Hosted by the people who made {project.name}</span>
@@ -367,7 +364,7 @@ function FailureCard(props: {
           )}
           {alternatives.map((a) => (
             <li key={a.slug}>
-              <Link href={`/projects/${a.slug}`} className="flex items-center justify-between rounded-2xl border border-black/10 px-4 py-3 hover:bg-black/[0.02]">
+              <Link href={`/projects/${a.slug}`} className="flex items-center justify-between rounded-md border border-border-strong px-4 py-3 hover:bg-ink-2/[0.02]">
                 <span>
                   <span className="font-semibold">Try {a.name}</span>
                   <span className="block text-sm text-muted">{a.tagline}</span>
@@ -377,7 +374,7 @@ function FailureCard(props: {
             </li>
           ))}
           <li>
-            <Link href="/explore?runnable=1" className="flex items-center justify-between rounded-2xl border border-black/10 px-4 py-3 hover:bg-black/[0.02]">
+            <Link href="/explore?runnable=1" className="flex items-center justify-between rounded-md border border-border-strong px-4 py-3 hover:bg-ink-2/[0.02]">
               <span>
                 <span className="font-semibold">Browse projects that work here</span>
                 <span className="block text-sm text-muted">Every one of these has been tested</span>
@@ -387,9 +384,9 @@ function FailureCard(props: {
           </li>
         </ul>
         <div className="mt-6 flex flex-wrap gap-3">
-          <button onClick={props.onRetry} className="rounded-2xl border border-black/10 px-5 py-2.5 font-semibold hover:bg-black/[0.03]">Try again</button>
+          <button onClick={props.onRetry} className="rounded-md border border-border-strong px-5 py-2.5 font-semibold hover:bg-ink-2/[0.03]">Try again</button>
           {project.repoUrl && (
-            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="rounded-2xl px-5 py-2.5 font-semibold text-muted hover:text-ink">
+            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="rounded-md px-5 py-2.5 font-semibold text-muted hover:text-ink">
               See it on GitHub ↗
             </a>
           )}

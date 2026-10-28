@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sandbox — Suggesting profile changes to the Bluesky app</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBFBFA;font-family:'Geist',system-ui,sans-serif;color:#1F2328}
+a{color:#1F2328}a:hover{color:#1A7F37}
+button,select,input{font-family:inherit}
+.file:hover{background:#F0EFEB}
+.row:hover{background:#F7F6F2}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-14px,8px)}}
+.drift{animation:drift 6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.drift{animation:none !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #FBFBFA; display: flex; flex-direction: column">
+
+<header style="border-bottom: 1px solid #E4E2DD; background: #FFFFFF; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px">
+<a href="Project.dc.html" style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #59636E; text-decoration: none; min-height: 40px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>Bluesky app</a>
+<div style="display: flex; align-items: baseline; gap: 10px; flex: 1 1 auto; min-width: 0; flex-wrap: wrap">
+<h1 style="margin: 0; font-size: 16px; font-weight: 600">Profiles, but more like Mastodon</h1>
+<span style="font-size: 13px; color: #59636E">your suggestion · {{changeCount}} changes · edited just now</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<div aria-hidden="true" style="display: flex">
+<span style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #FFFFFF; background: #1F2328; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center">You</span>
+<span style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #FFFFFF; margin-left: -8px; background: #C2410C; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">M</span>
+</div>
+<span style="font-size: 13px; color: #59636E">Maya is here</span>
+</div>
+<div style="position: relative">
+<button type="button" aria-expanded="{{menuOpenStr}}" aria-controls="cursor-menu" onClick="{{toggleMenu}}" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #D0CDC6; background: #FFFFFF; color: #1F2328; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px">
+<svg width="14" height="15" viewBox="0 0 20 22" aria-hidden="true"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Cursors: {{cursorLabel}}</button>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+<div id="cursor-menu" style="position: absolute; right: 0; top: 48px; z-index: 30; width: 290px; background: #FFFFFF; border: 1px solid #E4E2DD; border-radius: 12px; box-shadow: 0 12px 32px rgba(31,35,40,.14); padding: 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; font-weight: 600; padding: 0 6px 4px">Live cursors</span>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 6px; border-radius: 6px; cursor: pointer; font-size: 14px">See other people’s cursors
+<input type="checkbox" role="switch" checked="{{showOthers}}" onChange="{{toggleOthers}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px"></label>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 6px; border-radius: 6px; cursor: pointer; font-size: 14px">Show my cursor to others
+<input type="checkbox" role="switch" checked="{{shareMine}}" onChange="{{toggleMine}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px"></label>
+<span style="font-size: 12px; line-height: 1.45; color: #59636E; padding: 4px 6px 0">{{mineNote}}</span>
+</div>
+</sc-if>
+</div>
+<button type="button" onClick="{{share}}" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #1A7F37; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>{{shareLabel}}</button>
+</header>
+
+<div style="flex: 1 1 auto; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Project files" style="flex: 1 1 220px; max-width: 100%; box-sizing: border-box; background: #FFFFFF; border-right: 1px solid #E4E2DD; padding: 16px 10px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; font-weight: 600; color: #59636E; padding: 0 8px 6px">Project</span>
+<sc-for list="{{files}}" as="f" hint-placeholder-count="3">
+<sc-if value="{{f.active}}" hint-placeholder-val="{{false}}">
+<button type="button" aria-current="true" onClick="{{f.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px; min-height: 44px; border: 0; border-radius: 6px; background: #E6F1EA; text-align: left; cursor: pointer">
+<span style="font-size: 14px; font-weight: 600; color: #1E5E37">{{f.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #1E5E37">{{f.file}}</span>
+</button>
+</sc-if>
+<sc-if value="{{f.inactive}}" hint-placeholder-val="{{true}}">
+<button type="button" class="file" onClick="{{f.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px; min-height: 44px; border: 0; border-radius: 6px; background: transparent; text-align: left; cursor: pointer">
+<span style="font-size: 14px; font-weight: 500; color: #1F2328">{{f.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #59636E">{{f.file}}</span>
+</button>
+</sc-if>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 0 8px">
+<span style="font-size: 12px; font-weight: 600; color: #59636E">Your suggestion</span>
+<span style="align-self: flex-start; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: {{statusBg}}; color: {{statusInk}}">{{statusText}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #424A53">{{changeCount}} changes to the profile page, compared with the original app.</span>
+<span style="font-size: 12px; line-height: 1.45; color: #59636E">Based on <span style="font-family: 'Geist Mono', monospace">bluesky-social/social-app</span></span>
+</div>
+</nav>
+
+<main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; background: #FFFFFF">
+<div role="tablist" aria-label="Views" style="display: flex; border-bottom: 1px solid #E4E2DD; background: #FBFBFA">
+<sc-for list="{{files}}" as="f" hint-placeholder-count="3">
+<sc-if value="{{f.active}}" hint-placeholder-val="{{false}}">
+<button type="button" role="tab" aria-selected="true" onClick="{{f.pick}}" style="height: 44px; padding: 0 16px; border: 0; border-right: 1px solid #E4E2DD; background: #FFFFFF; box-shadow: inset 0 2px 0 #1A7F37; font-size: 13px; font-weight: 600; color: #1F2328; cursor: pointer; margin-bottom: -1px">{{f.label}}</button>
+</sc-if>
+<sc-if value="{{f.inactive}}" hint-placeholder-val="{{true}}">
+<button type="button" role="tab" aria-selected="false" onClick="{{f.pick}}" style="height: 44px; padding: 0 16px; border: 0; border-right: 1px solid #E4E2DD; background: transparent; font-size: 13px; font-weight: 500; color: #59636E; cursor: pointer">{{f.label}}</button>
+</sc-if>
+</sc-for>
+</div>
+
+<sc-if value="{{isCanvas}}" hint-placeholder-val="{{true}}">
+<div style="position: relative; flex: 1 1 auto; min-height: 700px; overflow: auto; background-color: #F5F4F0; background-image: radial-gradient(#D9D6CF 1px, transparent 1px); background-size: 20px 20px">
+<div style="min-width: 900px; box-sizing: border-box; padding: 32px 40px; display: flex; align-items: center; justify-content: center">
+
+<div style="position: relative; display: flex; flex-direction: column; gap: 16px; padding-right: 28px">
+<span aria-hidden="true" style="position: absolute; right: 0; top: 80px; bottom: 80px; width: 2px; background: #A8A49B"></span>
+
+<section aria-label="Profile details changes" style="position: relative; width: 300px; background: #FFFFFF; border: 1px solid #D0CDC6; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+<span aria-hidden="true" style="position: absolute; right: -29px; top: 50%; width: 28px; height: 2px; background: #A8A49B"></span>
+<span style="font-size: 13px; font-weight: 600; margin-bottom: 4px">Profile details</span>
+<label class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Verified links</span><span style="font-size: 12px; color: #59636E">A small table of links, ticked if proven</span></span>
+<input type="checkbox" role="switch" checked="{{fields}}" onChange="{{toggleFields}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+</label>
+<label class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Featured hashtags</span><span style="font-size: 12px; color: #59636E">Topics you post about most</span></span>
+<input type="checkbox" role="switch" checked="{{tags}}" onChange="{{toggleTags}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+</label>
+<label class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Show their server</span><span style="font-size: 12px; color: #59636E">@name@server, like Mastodon</span></span>
+<input type="checkbox" role="switch" checked="{{server}}" onChange="{{toggleServer}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+</label>
+</section>
+
+<section aria-label="Privacy and layout changes, being edited" style="position: relative; width: 300px; background: #FFFFFF; border: 2px solid #1A7F37; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 0 0 4px rgba(26,127,55,.12)">
+<span aria-hidden="true" style="position: absolute; right: -30px; top: 50%; width: 28px; height: 2px; background: #A8A49B"></span>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px">
+<span style="font-size: 13px; font-weight: 600">Privacy and layout</span>
+<span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #1A7F37; color: #FFFFFF">Editing</span>
+</div>
+<label class="row" style="position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Approve new followers</span><span style="font-size: 12px; color: #59636E">Follow becomes “Request to follow”</span></span>
+<input type="checkbox" role="switch" checked="{{locked}}" onChange="{{toggleLocked}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+<span aria-hidden="true" style="position: absolute; right: -6px; top: 30px; z-index: 4; pointer-events: none">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#1F2328" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; padding: 3px 8px; border-radius: 999px; background: #1F2328; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">{{youLabel}}</span>
+</span>
+</label>
+<label class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Hide follower counts</span><span style="font-size: 12px; color: #59636E">Less of a popularity contest</span></span>
+<input type="checkbox" role="switch" checked="{{hideCounts}}" onChange="{{toggleCounts}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+</label>
+<label class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px; border-radius: 6px; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">Mastodon-style tabs</span><span style="font-size: 12px; color: #59636E">Posts · Posts &amp; replies · Media</span></span>
+<input type="checkbox" role="switch" checked="{{mtabs}}" onChange="{{toggleTabs}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px">
+</label>
+</section>
+</div>
+
+<span aria-hidden="true" style="width: 40px; height: 2px; background: #A8A49B"></span>
+
+<section aria-label="Live profile preview" style="position: relative; background: #FFFFFF; border: 1px solid #D0CDC6; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px rgba(31,35,40,.08)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 13px; font-weight: 600">Profile page</span>
+<div role="group" aria-label="Compare" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 3px; background: #F0EFEB; border-radius: 8px">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2">
+<sc-if value="{{v.active}}" hint-placeholder-val="{{false}}">
+<button type="button" aria-pressed="true" onClick="{{v.pick}}" style="height: 30px; padding: 0 10px; border: 0; border-radius: 6px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(31,35,40,.12); font-size: 12px; font-weight: 600; color: #1F2328; cursor: pointer">{{v.label}}</button>
+</sc-if>
+<sc-if value="{{v.inactive}}" hint-placeholder-val="{{true}}">
+<button type="button" aria-pressed="false" onClick="{{v.pick}}" style="height: 30px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; font-size: 12px; color: #424A53; cursor: pointer">{{v.label}}</button>
+</sc-if>
+</sc-for>
+</div>
+</div>
+
+<div style="width: 330px; height: 640px; border-radius: 32px; border: 8px solid #1F2328; background: #FFFFFF; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+<div style="position: relative; height: 96px; flex: 0 0 96px; background-color: #CFE3D4; background-image: radial-gradient(#9BC4A6 2px, transparent 2.5px); background-size: 18px 18px">
+<span aria-hidden="true" style="position: absolute; top: 10px; left: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(31,35,40,.55); display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></span>
+</div>
+<div style="padding: 0 14px; display: flex; align-items: flex-end; justify-content: space-between; margin-top: -34px">
+<span style="width: 72px; height: 72px; border-radius: 50%; border: 3px solid #FFFFFF; background: #C2410C; color: #FFFFFF; font-size: 28px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-sizing: border-box">M</span>
+<sc-if value="{{isLocked}}" hint-placeholder-val="{{false}}">
+<span style="height: 32px; padding: 0 14px; border-radius: 999px; background: #1185FE; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Request to follow</span>
+</sc-if>
+<sc-if value="{{isOpen}}" hint-placeholder-val="{{true}}">
+<span style="height: 32px; padding: 0 16px; border-radius: 999px; background: #1185FE; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px">+ Follow</span>
+</sc-if>
+</div>
+<div style="padding: 8px 14px 0; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 21px; font-weight: 700">Maya Ortiz
+<sc-if value="{{isLocked}}" hint-placeholder-val="{{false}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#59636E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Approves followers"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>
+</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #59636E"><span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #EEF1F4; color: #424A53">Follows you</span>{{handle}}</span>
+<sc-if value="{{showCounts}}" hint-placeholder-val="{{true}}">
+<span style="font-size: 13px; color: #59636E"><strong style="color: #1F2328">1,204</strong> followers  <strong style="color: #1F2328">312</strong> following  <strong style="color: #1F2328">845</strong> posts</span>
+</sc-if>
+<sc-if value="{{countsHidden}}" hint-placeholder-val="{{false}}">
+<span style="font-size: 13px; color: #59636E"><strong style="color: #1F2328">845</strong> posts · follower counts hidden</span>
+</sc-if>
+<span style="font-size: 13px; line-height: 1.45">Allotment notes and bad photos of good vegetables. Slowly learning to compost properly.</span>
+<sc-if value="{{showFields}}" hint-placeholder-val="{{true}}">
+<div style="border: 1px solid #E4E7EB; border-radius: 8px; overflow: hidden; font-size: 12px">
+<div style="display: grid; grid-template-columns: 84px 1fr; background: #E6F4EA; border-bottom: 1px solid #E4E7EB">
+<span style="padding: 6px 8px; color: #1E5E37; font-weight: 600">Website</span>
+<span style="padding: 6px 8px; color: #1E5E37; display: flex; align-items: center; gap: 4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-label="Verified"><path d="M5 12l5 5 9-10"></path></svg>garden.example</span>
+</div>
+<div style="display: grid; grid-template-columns: 84px 1fr">
+<span style="padding: 6px 8px; color: #59636E; font-weight: 600">Pronouns</span>
+<span style="padding: 6px 8px">she/her</span>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{showTags}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-wrap: wrap; gap: 4px">
+<span style="font-size: 12px; padding: 3px 8px; border-radius: 999px; background: #E3EEFD; color: #0B4FA3">#allotment</span>
+<span style="font-size: 12px; padding: 3px 8px; border-radius: 999px; background: #E3EEFD; color: #0B4FA3">#composting</span>
+<span style="font-size: 12px; padding: 3px 8px; border-radius: 999px; background: #E3EEFD; color: #0B4FA3">#seedswap</span>
+</div>
+</sc-if>
+</div>
+<div style="margin-top: 10px; display: flex; border-bottom: 1px solid #EEF1F4; padding: 0 6px; font-size: 13px; overflow: hidden">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<sc-if value="{{t.first}}" hint-placeholder-val="{{true}}"><span style="padding: 10px 8px 8px; font-weight: 600; border-bottom: 3px solid #1185FE; white-space: nowrap">{{t.label}}</span></sc-if>
+<sc-if value="{{t.rest}}" hint-placeholder-val="{{false}}"><span style="padding: 10px 8px 8px; color: #59636E; white-space: nowrap">{{t.label}}</span></sc-if>
+</sc-for>
+</div>
+<div style="padding: 10px 12px; display: flex; gap: 10px">
+<span style="width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%; background: #C2410C; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">M</span>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"><strong>Maya Ortiz</strong> <span style="color: #59636E">{{handle}} · 2m</span></span>
+<span style="font-size: 13px; line-height: 1.4">First frost on the allotment this morning. The kale doesn’t care.</span>
+</span>
+</div>
+</div>
+
+<sc-if value="{{showOthers}}" hint-placeholder-val="{{true}}">
+<div aria-hidden="true" class="drift" style="position: absolute; right: -126px; top: 300px; z-index: 4; pointer-events: none">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#C2410C" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px">
+<span style="padding: 3px 8px; border-radius: 999px; background: #C2410C; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Maya</span>
+<span style="padding: 6px 10px; border-radius: 4px 12px 12px 12px; background: #C2410C; color: #FFFFFF; font-size: 13px; white-space: nowrap">the green tick on my<br>website link is lovely</span>
+</span>
+</div>
+</sc-if>
+</section>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isChanges}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1 1 auto; min-height: 700px; overflow: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 650">What your suggestion changes on the profile page</h2>
+<p style="margin: 0; font-size: 13px; color: #59636E; max-width: 620px">A simplified view. Red lines are how the profile works now; green lines are your suggestion. The real change would touch several files — the maintainers will see this summary when you share.</p>
+</div>
+<sc-if value="{{noChanges}}" hint-placeholder-val="{{false}}">
+<p style="margin: 0; font-size: 14px; color: #59636E">No changes yet. Flip a switch on the Canvas to start.</p>
+</sc-if>
+<sc-for list="{{diff}}" as="d" hint-placeholder-count="4">
+<div style="border: 1px solid #E4E2DD; border-radius: 10px; overflow: hidden">
+<div style="padding: 8px 12px; background: #FBFBFA; border-bottom: 1px solid #E4E2DD; font-size: 13px; font-weight: 600">{{d.title}}</div>
+<div style="font-family: 'Geist Mono', monospace; font-size: 13px">
+<div style="display: flex; gap: 12px; padding: 6px 12px; background: #FDECEA; color: #A4161A"><span aria-label="removed">−</span><span>{{d.before}}</span></div>
+<div style="display: flex; gap: 12px; padding: 6px 12px; background: #E6F4EA; color: #1E5E37"><span aria-label="added">+</span><span>{{d.after}}</span></div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isAbout}}" hint-placeholder-val="{{false}}">
+<article style="flex: 1 1 auto; min-height: 700px; box-sizing: border-box; max-width: 620px; padding: 24px 32px; display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.6">
+<h2 style="margin: 0; font-size: 20px; font-weight: 650">About this suggestion</h2>
+<p style="margin: 0">You’re testing profile ideas from Mastodon — another open-source social network — on a private copy of the Bluesky app’s profile page. The profile and its posts are pretend.</p>
+<p style="margin: 0">When you share, the maintainers get a plain-language summary plus the technical details, and other people can open your sandbox to try it.</p>
+<div style="display: grid; grid-template-columns: 96px 1fr; row-gap: 6px; font-size: 14px">
+<span style="color: #59636E">Project</span><span style="font-family: 'Geist Mono', monospace">bluesky-social/social-app</span>
+<span style="color: #59636E">Licence</span><span>MIT</span>
+<span style="color: #59636E">Inspired by</span><span>Mastodon (<span style="font-family: 'Geist Mono', monospace">mastodon/mastodon</span>)</span>
+</div>
+<a href="Project.dc.html" style="font-size: 14px; font-weight: 500">Back to the Bluesky app page →</a>
+</article>
+</sc-if>
+
+<section aria-label="Activity" style="border-top: 1px solid #E4E2DD; background: #FBFBFA; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid #EFEDE8">
+<span style="font-size: 12px; font-weight: 600; color: #424A53">Activity</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #59636E">changes save automatically</span>
+</div>
+<ul aria-live="polite" style="list-style: none; margin: 0; min-height: 104px; padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+<sc-for list="{{log}}" as="g" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8C959F"></span>
+<span>{{g}}</span>
+</li>
+</sc-for>
+</ul>
+</section>
+</main>
+</div>
+
+<footer style="border-top: 1px solid #E4E2DD; background: #FFFFFF; padding: 6px 16px; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12px; color: #59636E">
+<span>{{previewNote}}</span>
+<span>Pretend profile — nothing is changed for real</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var s = this.state || {};
+    var self = this;
+    var tab = s.tab || 'canvas';
+    var view = s.view || 'yours';
+    function val(k, d) { return s[k] === undefined ? d : s[k]; }
+    var mine = { fields: val('fields', true), tags: val('tags', false), server: val('server', false), locked: val('locked', true), hideCounts: val('hideCounts', false), mtabs: val('mtabs', false) };
+    var orig = { fields: false, tags: false, server: false, locked: false, hideCounts: false, mtabs: false };
+    var cfg = view === 'original' ? orig : mine;
+    var log = s.log || ['You turned Approve new followers on', 'Maya joined', 'You turned Verified links on', 'You opened a profile page to test changes'];
+    function upd(patch, key, msg) {
+      var next = (s.lastKey === key) ? [msg].concat(log.slice(1)) : [msg].concat(log);
+      self.setState(Object.assign({}, patch, { log: next.slice(0, 5), lastKey: key, view: 'yours', shared: false }));
+    }
+    function toggler(k, label) {
+      return function () { var on = !mine[k]; var p = {}; p[k] = on; upd(p, k + on, 'You turned ' + label + (on ? ' on' : ' off')); };
+    }
+    var tabNames = cfg.mtabs ? ['Posts', 'Posts & replies', 'Media'] : ['Posts', 'Replies', 'Media', 'Likes', 'Feeds'];
+    var defs = [
+      ['fields', 'Profile links', 'profile.fields: none', 'profile.fields: up to 4, links verified ✓'],
+      ['tags', 'Featured hashtags', 'featuredHashtags: off', 'featuredHashtags: on'],
+      ['server', 'Handle', "handle: '@maya.bsky.social'", "handle: '@maya@garden.example'"],
+      ['locked', 'Who can follow', "followPolicy: 'anyone'", "followPolicy: 'approve'"],
+      ['hideCounts', 'Follower counts', 'showFollowerCounts: true', 'showFollowerCounts: false'],
+      ['mtabs', 'Profile tabs', 'tabs: Posts, Replies, Media, Likes, Feeds', 'tabs: Posts, Posts & replies, Media']
+    ];
+    var diff = defs.filter(function (d) { return mine[d[0]] !== orig[d[0]]; }).map(function (d) { return { title: d[1], before: d[2], after: d[3] }; });
+    var shared = !!s.shared;
+    var showOthers = s.showOthers !== false;
+    var shareMine = s.shareMine !== false;
+    var menuOpen = !!s.menuOpen;
+    return {
+      showOthers: showOthers,
+      shareMine: shareMine,
+      menuOpen: menuOpen,
+      menuOpenStr: menuOpen ? 'true' : 'false',
+      cursorLabel: showOthers ? 'On' : 'Off',
+      toggleMenu: function () { self.setState({ menuOpen: !menuOpen }); },
+      toggleOthers: function () { self.setState({ showOthers: !showOthers }); },
+      toggleMine: function () { self.setState({ shareMine: !shareMine }); },
+      youLabel: shareMine ? 'You' : 'You · private',
+      mineNote: shareMine ? 'Maya can see your pointer while you edit. Turn it off to work privately — she’ll still see your changes.' : 'Your pointer is private. Maya still sees your changes, but not where you are.',
+      files: [['canvas', 'Canvas', 'profile preview'], ['changes', 'Changes', 'suggestion.diff'], ['about', 'About', 'README.md']].map(function (f) {
+        return { label: f[1], file: f[2], active: f[0] === tab, inactive: f[0] !== tab, pick: function () { self.setState({ tab: f[0] }); } };
+      }),
+      isCanvas: tab === 'canvas',
+      isChanges: tab === 'changes',
+      isAbout: tab === 'about',
+      views: [['original', 'Original'], ['yours', 'Your version']].map(function (v) {
+        return { label: v[1], active: v[0] === view, inactive: v[0] !== view, pick: function () { self.setState({ view: v[0] }); } };
+      }),
+      fields: mine.fields, tags: mine.tags, server: mine.server, locked: mine.locked, hideCounts: mine.hideCounts, mtabs: mine.mtabs,
+      toggleFields: toggler('fields', 'Verified links'),
+      toggleTags: toggler('tags', 'Featured hashtags'),
+      toggleServer: toggler('server', 'Show their server'),
+      toggleLocked: toggler('locked', 'Approve new followers'),
+      toggleCounts: toggler('hideCounts', 'Hide follower counts'),
+      toggleTabs: toggler('mtabs', 'Mastodon-style tabs'),
+      handle: cfg.server ? '@maya@garden.example' : '@maya.bsky.social',
+      isLocked: cfg.locked, isOpen: !cfg.locked,
+      showCounts: !cfg.hideCounts, countsHidden: cfg.hideCounts,
+      showFields: cfg.fields, showTags: cfg.tags,
+      tabs: tabNames.map(function (t, i) { return { label: t, first: i === 0, rest: i !== 0 }; }),
+      diff: diff,
+      noChanges: diff.length === 0,
+      changeCount: diff.length,
+      share: function () { self.setState({ shared: true, log: ['You shared this suggestion with the maintainers'].concat(log).slice(0, 5), lastKey: 'share' }); },
+      shareLabel: shared ? 'Shared' : 'Share suggestion',
+      statusText: shared ? 'Shared with maintainers' : 'Draft',
+      statusBg: shared ? '#E6F4EA' : '#FFF4CF',
+      statusInk: shared ? '#1E5E37' : '#5A4710',
+      previewNote: view === 'original' ? 'Showing the original profile page' : 'Showing your version of the profile page',
+      log: log
+    };
+  }
+}
+</script>
+</body>
+</html>

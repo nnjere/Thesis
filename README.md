@@ -1,17 +1,19 @@
-# Openly: a no-code sandbox for open source
+# Sandbox: try open source without installing anything
 
-A working prototype that helps people with little or no coding experience **discover, understand and try** open-source projects without touching GitHub, a terminal or an installer.
+A working prototype that helps people with little or no coding experience **discover, understand, try and remix** open-source projects without touching GitHub, a terminal or an installer.
 
-> Discover → Understand → Try → Explore
+> Gallery → Project page → Workspace
 
-![Home page](docs/screenshots/home.png)
+![Gallery](docs/screenshots/gallery.png)
+
+The visual design follows the brief in [docs/design/UI_BRIEF.md](docs/design/UI_BRIEF.md) (reference screens alongside it).
 
 ## Quick start
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm test             # 108 unit tests
+npm test             # 120 unit tests
 npm run typecheck
 npm run build && npm start
 ```
@@ -24,12 +26,14 @@ The product's core principle is to hide unnecessary technical complexity without
 
 | Feature | Status |
 | --- | --- |
-| Browse, search and read project pages | **Real.** Local catalog of 21 projects |
+| Browse, search and read project pages | **Real.** Local catalog of 22 projects |
 | Natural-language search | **Real keyword search** (stop words, stemming, synonyms). Not AI, and the UI says so |
 | Built-in demos: Flow Fields, Palette Pick, Quick Chart (web apps) | **Really run** in a sandboxed iframe (`allow-scripts`, opaque origin, strict CSP) |
 | Built-in demos: Readable, Markdown to Document (command-line tools turned into forms) | **Really run** through server-side tool adapters |
 | "Check a GitHub link" analysis | **Real, read-only.** Reads public metadata and config files, then classifies the project. Nothing is executed |
-| "Try it" for GitHub sample listings | **Simulated** and labelled as such everywhere. No real sandbox is connected |
+| "Open in sandbox" for GitHub sample listings | **Simulated** and labelled as such everywhere. No real sandbox is connected |
+| Workspace (Bluesky app, "Profiles, but more like Mastodon") | **Real interactions on a pretend profile** drawn by Sandbox, not the real app. "Share suggestion" only marks the draft as shared; nothing is sent |
+| Live cursors and "people looking at this page" | **Demo presence feed** (`MockPresenceProvider`), marked "demo" in the UI. The privacy controls are real: with "Show my cursor" off, pointer updates are never handed to the transport |
 | AI-assisted setup | **Interface only.** No model is connected, and the UI says so |
 
 Only built-in demos can carry the **Verified** status. A test enforces this rule.
@@ -38,8 +42,10 @@ Only built-in demos can carry the **Verified** status. A test enforces this rule
 
 | | |
 | --- | --- |
-| ![Real web app in sandbox](docs/screenshots/launch-webapp.png) | ![CLI tool as a form](docs/screenshots/tool-form.png) |
-| ![Simulated launch](docs/screenshots/simulated-complete.png) | ![Friendly failure](docs/screenshots/failure.png) |
+| ![Project page](docs/screenshots/project-page.png) | ![Cursor privacy popover](docs/screenshots/cursor-privacy.png) |
+| ![Workspace canvas](docs/screenshots/workspace.png) | ![Workspace changes](docs/screenshots/workspace-changes.png) |
+| ![Built-in demo running](docs/screenshots/built-in-demo.png) | ![Command-line tool as a form](docs/screenshots/tool-form.png) |
+| ![Friendly failure](docs/screenshots/friendly-failure.png) | ![Gallery on a phone](docs/screenshots/gallery-mobile.png) |
 
 ## Protecting the projects we host
 

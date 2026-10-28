@@ -9,7 +9,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: #f2f7fb; color: #0f2234; padding: 24px; }
   .wrap { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 20px; }
-  @media (max-width: 720px) { .wrap { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .wrap { grid-template-columns: 1fr; } .card { order: -1; } }
   h1 { margin: 0; font-size: 22px; } p { margin: 4px 0 12px; color: #4b6075; font-size: 14px; line-height: 1.5; }
   textarea { width: 100%; height: 240px; font: 14px/1.5 ui-monospace, Menlo, monospace; border-radius: 12px; border: 1px solid #c9d8e6; padding: 10px; resize: vertical; }
   label { font-size: 13px; font-weight: 600; display: block; margin: 12px 0 6px; }

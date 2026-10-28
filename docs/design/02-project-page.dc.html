@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sandbox — Bluesky app project page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBFBFA;font-family:'Geist',system-ui,sans-serif;color:#1F2328}
+a{color:#1F2328}a:hover{color:#1A7F37}
+button{font-family:inherit}
+.cur{position:absolute;pointer-events:none;z-index:20;will-change:transform}
+@keyframes cA{0%{transform:translate(0,0)}20%{transform:translate(170px,40px)}45%{transform:translate(260px,-30px)}70%{transform:translate(90px,70px)}100%{transform:translate(0,0)}}
+@keyframes cB{0%{transform:translate(0,0)}30%{transform:translate(-120px,110px)}55%{transform:translate(60px,190px)}80%{transform:translate(110px,30px)}100%{transform:translate(0,0)}}
+@keyframes cC{0%{transform:translate(0,0)}25%{transform:translate(240px,20px)}50%{transform:translate(380px,-40px)}75%{transform:translate(160px,60px)}100%{transform:translate(0,0)}}
+@keyframes cD{0%{transform:translate(0,0)}35%{transform:translate(-180px,-60px)}65%{transform:translate(-60px,80px)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion: reduce){.cur{animation:none !important}}
+.rm:hover{border-color:#C9C6BF;box-shadow:0 6px 20px rgba(31,35,40,.07)}
+</style>
+</helmet>
+<div style="position: relative; min-height: 100vh; background: #FBFBFA; overflow: hidden">
+
+<header style="border-bottom: 1px solid #E4E2DD; background: #FFFFFF">
+<div style="max-width: 1120px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1F2328">
+<span style="width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; background-color: #E47777">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"></path><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"></path></svg>
+</span>
+<span style="font-weight: 650; font-size: 16px">Sandbox</span>
+</a>
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #59636E">
+<a href="Main.dc.html" style="color: #59636E; text-decoration: none">Explore</a>
+<span aria-hidden="true">/</span>
+<span style="color: #1F2328; font-weight: 500">Bluesky app</span>
+</nav>
+<div style="flex: 1 1 0"></div>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="display: flex">
+<sc-for list="{{people}}" as="u" hint-placeholder-count="4">
+<span style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #FFFFFF; margin-left: -8px; background: {{u.color}}; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{u.initial}}</span>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #59636E">4 people looking at this page</span>
+</div>
+<div style="position: relative">
+<button type="button" aria-expanded="{{menuOpenStr}}" aria-controls="cursor-menu" onClick="{{toggleMenu}}" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #D0CDC6; background: #FFFFFF; color: #1F2328; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px">
+<svg width="14" height="15" viewBox="0 0 20 22" aria-hidden="true"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Cursors: {{cursorLabel}}</button>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+<div id="cursor-menu" style="position: absolute; right: 0; top: 48px; z-index: 30; width: 290px; background: #FFFFFF; border: 1px solid #E4E2DD; border-radius: 12px; box-shadow: 0 12px 32px rgba(31,35,40,.14); padding: 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; font-weight: 600; padding: 0 6px 4px">Live cursors</span>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 6px; border-radius: 6px; cursor: pointer; font-size: 14px">See other people’s cursors
+<input type="checkbox" role="switch" checked="{{showOthers}}" onChange="{{toggleOthers}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px"></label>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 6px; border-radius: 6px; cursor: pointer; font-size: 14px">Show my cursor to others
+<input type="checkbox" role="switch" checked="{{shareMine}}" onChange="{{toggleMine}}" style="accent-color: #1A7F37; width: 20px; height: 20px; margin: 0; flex: 0 0 20px"></label>
+<span style="font-size: 12px; line-height: 1.45; color: #59636E; padding: 4px 6px 0">{{mineNote}}</span>
+</div>
+</sc-if>
+</div>
+<button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #D0CDC6; background: #FFFFFF; color: #1F2328; font-size: 14px; font-weight: 500; cursor: pointer">Sign in</button>
+</div>
+</header>
+
+<main style="max-width: 1120px; margin: 0 auto; padding: 0 24px 80px">
+
+<section style="padding: 56px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 48px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start">
+<span style="font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 4px; background: #E3EEFD; color: #0B4FA3">Social apps</span>
+<h1 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: clamp(40px, 6vw, 60px); line-height: 1.02; font-weight: 500; letter-spacing: -0.03em">Bluesky app</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #424A53; max-width: 480px">The open-source app people use to read and post on Bluesky. Try it on a pretend timeline, flip switches to change how it works, and suggest your ideas to the people who build it.</p>
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #59636E">bluesky-social/social-app · MIT · TypeScript</span>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px">
+<a href="Canvas.dc.html" style="height: 48px; padding: 0 22px; border-radius: 10px; background: #1A7F37; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3l15 9-15 9z"></path></svg>Open in sandbox</a>
+<a href="https://github.com/bluesky-social/social-app" style="height: 48px; padding: 0 18px; border-radius: 10px; border: 1px solid #D0CDC6; background: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 8px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path></svg>View source</a>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<span style="font-size: 13px; color: #59636E; margin-right: 4px">Good for</span>
+<span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid #E4E2DD; background: #FFFFFF">Trying new features</span>
+<span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid #E4E2DD; background: #FFFFFF">Comparing apps</span>
+<span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid #E4E2DD; background: #FFFFFF">Suggesting changes</span>
+</div>
+</div>
+
+<figure style="margin: 0; display: flex; justify-content: center">
+<div role="img" aria-label="Preview of the Bluesky app showing a timeline of posts" style="width: 320px; height: 600px; border-radius: 36px; border: 8px solid #1F2328; background: #FFFFFF; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 16px 40px rgba(31,35,40,.14)">
+<div style="padding: 18px 16px 0; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #EEF1F4">
+<span style="align-self: center; width: 28px; height: 28px; border-radius: 50%; background: #1185FE"></span>
+<div style="display: flex; justify-content: space-around; font-size: 14px">
+<span style="font-weight: 600; padding-bottom: 10px; border-bottom: 3px solid #1185FE">Discover</span>
+<span style="color: #59636E; padding-bottom: 10px">Following</span>
+</div>
+</div>
+<sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
+<div style="padding: 12px 14px; border-bottom: 1px solid #EEF1F4; display: flex; gap: 10px">
+<span style="width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; background: {{p.color}}; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{p.initial}}</span>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-size: 13px"><strong>{{p.name}}</strong> <span style="color: #59636E">@{{p.handle}} · {{p.time}}</span></span>
+<span style="font-size: 14px; line-height: 1.4">{{p.text}}</span>
+<span style="display: flex; gap: 28px; color: #59636E; margin-top: 4px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+</span>
+</span>
+</div>
+</sc-for>
+</div>
+</figure>
+</section>
+
+<section aria-labelledby="ideas" style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 56px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="ideas" style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em">What people are suggesting</h2>
+<span style="font-size: 14px; color: #59636E">Ideas others have tried in their sandbox. Open one to test it yourself.</span>
+</div>
+<a href="#" style="font-size: 14px; font-weight: 500">All suggestions →</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px">
+<sc-for list="{{ideas}}" as="i" hint-placeholder-count="3">
+<a href="Canvas.dc.html" class="rm" style="display: flex; flex-direction: column; gap: 10px; padding: 18px; background: #FFFFFF; border: 1px solid #E4E2DD; border-radius: 12px; text-decoration: none; color: #1F2328">
+<span style="align-self: flex-start; font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 4px; background: #EDE9FE; color: #5B21B6">Like Mastodon</span>
+<span style="font-size: 16px; font-weight: 600">{{i.title}}</span>
+<span style="font-size: 14px; line-height: 1.45; color: #424A53">{{i.desc}}</span>
+<span style="font-size: 13px; color: #59636E">Suggested by {{i.by}} · [EXAMPLE]</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="border-top: 1px solid #E4E2DD; padding: 48px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em">What is it?</h2>
+<p style="margin: 0; font-size: 16px; line-height: 1.65">Bluesky is a social network built on an open system that anyone can build on. Its app is open source, so anyone can read how it works and propose changes.</p>
+<p style="margin: 0; font-size: 16px; line-height: 1.65">In the sandbox you get a pretend timeline with test accounts, so nothing you do is posted for real. Turn features on and off, compare with the original, and share what you’d change.</p>
+</div>
+<dl style="margin: 0; padding: 20px; background: #FFFFFF; border: 1px solid #E4E2DD; border-radius: 12px; display: grid; grid-template-columns: 120px 1fr; row-gap: 12px; font-size: 14px; align-content: start">
+<dt style="color: #59636E">Made by</dt><dd style="margin: 0">Bluesky and open-source contributors</dd>
+<dt style="color: #59636E">Licence</dt><dd style="margin: 0">MIT — free to use and remix</dd>
+<dt style="color: #59636E">Written in</dt><dd style="margin: 0">TypeScript (React Native)</dd>
+<dt style="color: #59636E">Source</dt><dd style="margin: 0"><a href="https://github.com/bluesky-social/social-app" style="font-family: 'Geist Mono', monospace; font-size: 13px">bluesky-social/social-app</a></dd>
+<dt style="color: #59636E">Sandbox</dt><dd style="margin: 0">Pretend timeline — nothing is posted for real</dd>
+</dl>
+</section>
+</main>
+
+<footer style="border-top: 1px solid #E4E2DD; background: #FFFFFF">
+<div style="max-width: 1120px; margin: 0 auto; padding: 20px 24px; font-size: 13px; color: #59636E">Sandbox runs open-source projects in private sandboxes. Credit always goes to the makers.</div>
+</footer>
+
+<sc-if value="{{showOthers}}" hint-placeholder-val="{{true}}">
+<div aria-hidden="true" class="cur" style="left: 9%; top: 500px; animation: cA 13s ease-in-out infinite">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#C2410C" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; padding: 3px 8px; border-radius: 999px; background: #C2410C; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Maya</span>
+</div>
+<div aria-hidden="true" class="cur" style="left: 66%; top: 300px; animation: cB 11s ease-in-out infinite">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#6D28D9" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; padding: 3px 8px; border-radius: 999px; background: #6D28D9; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Jun</span>
+</div>
+<div aria-hidden="true" class="cur" style="left: 20%; top: 870px; animation: cC 15s ease-in-out infinite">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#0E7490" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px">
+<span style="padding: 3px 8px; border-radius: 999px; background: #0E7490; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Ola</span>
+<span style="padding: 6px 10px; border-radius: 4px 12px 12px 12px; background: #0E7490; color: #FFFFFF; font-size: 13px; white-space: nowrap">yes, verified links please</span>
+</span>
+</div>
+<div aria-hidden="true" class="cur" style="left: 78%; top: 1300px; animation: cD 12s ease-in-out infinite">
+<svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 2l15 8-6.5 1.8L8 19z" fill="#BE185D" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 16px; top: 18px; padding: 3px 8px; border-radius: 999px; background: #BE185D; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Sam</span>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var s = this.state || {};
+    var self = this;
+    var showOthers = s.showOthers !== false;
+    var shareMine = s.shareMine !== false;
+    var menuOpen = !!s.menuOpen;
+    return {
+      showOthers: showOthers,
+      shareMine: shareMine,
+      menuOpen: menuOpen,
+      menuOpenStr: menuOpen ? 'true' : 'false',
+      cursorLabel: showOthers ? 'On' : 'Off',
+      toggleMenu: function () { self.setState({ menuOpen: !menuOpen }); },
+      toggleOthers: function () { self.setState({ showOthers: !showOthers }); },
+      toggleMine: function () { self.setState({ shareMine: !shareMine }); },
+      mineNote: shareMine ? 'Others see your pointer with your name. Turn it off to browse privately — you’ll count as “someone” in the viewer number.' : 'Your pointer is private. Others see “someone” in the viewer count, but not where you are on the page.',
+      posts: [
+        { name: 'Sam Lee', handle: 'samlee.example', time: '6h', initial: 'S', color: '#BE185D', text: 'Hot take: pineapple belongs on pizza. Fight me.' },
+        { name: 'Maya Ortiz', handle: 'maya.example', time: '2m', initial: 'M', color: '#C2410C', text: 'First frost on the allotment this morning. The kale doesn’t care.' },
+        { name: 'Jun Park', handle: 'jun.example', time: '9m', initial: 'J', color: '#6D28D9', text: 'Can’t believe how that finale ended. Still thinking about the last scene.' }
+      ],
+      ideas: [
+        { title: 'Verified links on profiles', desc: 'A small table of links on your profile, with a green tick when you’ve proven you own the site.', by: '@maya' },
+        { title: 'Approve new followers', desc: 'Let people choose who follows them, so Follow becomes “Request to follow”.', by: '@jun' },
+        { title: 'Hide follower counts', desc: 'Make profiles less of a popularity contest by keeping the numbers private.', by: '@ola' }
+      ],
+      people: [
+        { initial: 'M', color: '#C2410C' },
+        { initial: 'J', color: '#6D28D9' },
+        { initial: 'O', color: '#0E7490' },
+        { initial: 'S', color: '#BE185D' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

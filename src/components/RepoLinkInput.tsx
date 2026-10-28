@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { darkButton } from "./ui/styles";
 
 export function RepoLinkInput({ initial = "", autoFocus = false }: { initial?: string; autoFocus?: boolean }) {
   const router = useRouter();
@@ -25,11 +26,9 @@ export function RepoLinkInput({ initial = "", autoFocus = false }: { initial?: s
         autoComplete="off"
         spellCheck={false}
         maxLength={300}
-        className="min-w-0 flex-1 rounded-2xl border border-black/10 bg-white px-4 py-3 font-mono text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+        className="h-10 min-w-0 flex-1 rounded-md border border-border-strong bg-surface px-3 font-mono text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
       />
-      <button type="submit" className="rounded-2xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-black">
-        Check this project
-      </button>
+      <button type="submit" className={darkButton()}>Check this project</button>
     </form>
   );
 }

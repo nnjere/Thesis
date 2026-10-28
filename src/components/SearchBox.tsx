@@ -2,15 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Icon } from "./ui/Icon";
 
-const EXAMPLES = [
-  "A tool that removes backgrounds from images",
-  "Something that visualizes data",
-  "An AI tool for summarizing documents",
-  "A tool for creating generative art",
-];
+const EXAMPLES = ["Remove backgrounds from images", "Visualize data", "Summarize documents", "Make generative art"];
 
-export function SearchBox({ initial = "", showExamples = false, size = "lg" }: { initial?: string; showExamples?: boolean; size?: "lg" | "md" }) {
+export function SearchBox({ initial = "", showExamples = false }: { initial?: string; showExamples?: boolean; size?: "lg" | "md" }) {
   const router = useRouter();
   const [q, setQ] = useState(initial);
   const go = (query: string) => router.push(`/explore?q=${encodeURIComponent(query.trim())}`);
@@ -23,31 +19,33 @@ export function SearchBox({ initial = "", showExamples = false, size = "lg" }: {
           e.preventDefault();
           go(q);
         }}
-        className={`flex items-center gap-2 rounded-full border border-black/10 bg-white shadow-sm focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 ${size === "lg" ? "p-2 pl-5" : "p-1.5 pl-4"}`}
       >
-        <span aria-hidden className="text-muted">⌕</span>
-        <label htmlFor="search" className="sr-only">Describe what you're looking for</label>
-        <input
-          id="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Describe what you want to do, e.g. “make a chart from my data”"
-          className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted/70 ${size === "lg" ? "text-base sm:text-lg" : "text-sm sm:text-base"}`}
-          maxLength={200}
-        />
-        <button type="submit" className={`rounded-full bg-brand-600 font-semibold text-white hover:bg-brand-700 ${size === "lg" ? "px-5 py-2.5" : "px-4 py-2 text-sm"}`}>
-          Search
-        </button>
+        <label htmlFor="q" className="sr-only">What do you want to do?</label>
+        <div className="flex h-[52px] items-center gap-2.5 rounded-card border border-border-strong bg-surface px-[18px] focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+          <Icon name="search" size={18} className="flex-none text-muted" />
+          <input
+            id="q"
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="What do you want to do?"
+            maxLength={200}
+            className="min-w-0 flex-auto border-0 bg-transparent text-base text-ink outline-none placeholder:text-muted"
+          />
+        </div>
       </form>
       {showExamples && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-          <span className="text-muted">Try:</span>
-          {EXAMPLES.map((ex) => (
-            <button key={ex} type="button" onClick={() => go(ex)} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 text-muted hover:border-brand-200 hover:text-ink">
-              {ex}
-            </button>
+        <p className="mt-3 flex flex-wrap items-center justify-center gap-x-1 gap-y-1 text-[13px] text-muted">
+          <span>For example:</span>
+          {EXAMPLES.map((ex, i) => (
+            <span key={ex}>
+              <button type="button" onClick={() => go(ex)} className="cursor-pointer rounded-sm px-1 text-ink-2 underline decoration-border-strong underline-offset-4 hover:text-primary">
+                {ex}
+              </button>
+              {i < EXAMPLES.length - 1 && <span aria-hidden>·</span>}
+            </span>
           ))}
-        </div>
+        </p>
       )}
     </div>
   );
