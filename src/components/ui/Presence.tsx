@@ -7,7 +7,9 @@ export function PresenceAvatars({ people }: { people: Pick<PresencePerson, "id" 
       {people.map((p) => (
         <span
           key={p.id}
-          className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface text-xs font-semibold text-white"
+          className={`-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface font-semibold text-white ${
+            p.initials.length > 1 ? "text-[10px] tracking-tight" : "text-xs"
+          }`}
           style={{ background: p.color }}
         >
           {p.initials}
@@ -41,7 +43,7 @@ export function LiveCursor({
           {name}
         </span>
         {bubble && (
-          <span className="max-w-[220px] rounded-[4px_12px_12px_12px] px-2.5 py-1.5 text-[13px] text-white" style={{ background: color }}>
+          <span className="w-max max-w-[220px] rounded-[4px_12px_12px_12px] px-2.5 py-1.5 text-[13px] text-white" style={{ background: color }}>
             {bubble}
           </span>
         )}

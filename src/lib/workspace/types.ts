@@ -46,6 +46,8 @@ export interface WorkspaceScenario {
   exampleDraft: SettingValues;
   suggestions: SuggestionPreset[];
   about: { paragraphs: string[]; inspiredBy: { name: string; repo: string } };
+  /** Demo-only chat bubbles for the mock presence feed. */
+  demoChat?: { workspace?: string; projectPage?: string };
 }
 
 export interface WorkspaceState {

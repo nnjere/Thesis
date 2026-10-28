@@ -39,4 +39,5 @@ export const blueskyProfile: WorkspaceScenario = {
     ],
     inspiredBy: { name: "Mastodon", repo: "mastodon/mastodon" },
   },
+  demoChat: { workspace: "the green tick on my website link is lovely", projectPage: "yes, verified links please" },
 };
