@@ -87,7 +87,6 @@ export default function HomePage() {
                   href={`/explore?category=${c.id}`}
                   className="flex h-full flex-col gap-1 rounded-md border border-border bg-surface p-4 transition hover:border-primary hover:shadow-md"
                 >
-                  <span aria-hidden className="text-2xl">{c.icon}</span>
                   <span className="font-semibold leading-tight">{c.label}</span>
                   <span className="text-sm text-muted">{c.blurb} · {count}</span>
                 </Link>

@@ -44,7 +44,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
           <Link href={hrefWith(current, { category: undefined })} className={chip(!category)}>All topics</Link>
           {CATEGORIES.map((c) => (
             <Link key={c.id} href={hrefWith(current, { category: c.id })} className={chip(category === c.id)}>
-              <span aria-hidden>{c.icon}</span> {c.label}
+              {c.label}
             </Link>
           ))}
         </div>
@@ -56,7 +56,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
           <Link href={hrefWith(current, { type: undefined })} className={chip(!type)}>Any kind</Link>
           {TYPES.map((t) => (
             <Link key={t} href={hrefWith(current, { type: t })} className={chip(type === t)} title={TYPE_INFO[t].plain}>
-              {TYPE_INFO[t].icon} {TYPE_INFO[t].label}
+              {TYPE_INFO[t].label}
             </Link>
           ))}
         </div>

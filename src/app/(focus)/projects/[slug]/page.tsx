@@ -124,7 +124,6 @@ export default async function ProjectPage({ params }: Params) {
           </Section>
           <Section title="What kind of project is it?">
             <p>
-              <span aria-hidden>{TYPE_INFO[project.type].icon} </span>
               <strong>{TYPE_INFO[project.type].label}:</strong> {TYPE_INFO[project.type].plain.toLowerCase()}.
             </p>
             {project.type === "library" && (

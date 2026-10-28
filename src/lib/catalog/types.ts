@@ -15,6 +15,7 @@ export type RunStatus = "verified" | "ready" | "experimental" | "not-runnable";
 export type DataSource = "built-in-demo" | "sample-listing" | "analyzed";
 
 export type CategoryId =
+  | "social"
   | "ai-ml"
   | "design-creativity"
   | "productivity"
@@ -27,8 +28,10 @@ export interface Category {
   id: CategoryId;
   label: string;
   blurb: string;
-  icon: string;
 }
+
+/** What a project works with, in plain words. Drives tag colours and Gallery filters. */
+export type ProjectKind = "images" | "audio" | "documents" | "creative" | "data" | "social" | "tools";
 
 export type PreviewPattern = "flow" | "dots" | "rings" | "bars" | "blobs" | "grid" | "stripes";
 
@@ -70,6 +73,7 @@ export interface Project {
   /** "What can you do with it?" concrete examples. */
   uses: string[];
   category: CategoryId;
+  kind: ProjectKind;
   tags: string[];
   /** Extra search terms (synonyms people might type). */
   keywords: string[];
@@ -79,6 +83,10 @@ export interface Project {
   creator: { name: string; url?: string };
   repo?: { owner: string; name: string; url: string };
   license?: string;
+  /** Main programming language, only where known. */
+  language?: string;
+  /** Id of an interactive workspace scenario (src/lib/workspace), if one exists. */
+  workspace?: string;
   /** Official hosted version, if the project offers one. */
   homepage?: string;
   /** Where to download a desktop/mobile build. */

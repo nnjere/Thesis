@@ -1,21 +1,17 @@
 import Link from "next/link";
+import { Logo, SignInButton } from "./ui/Logo";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-bg/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span aria-hidden className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-white">◌</span>
-          <span className="text-lg">Openly</span>
-          <span className="rounded-full bg-note-bg px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-note-ink">
-            Prototype
-          </span>
-        </Link>
-        <nav aria-label="Main" className="flex items-center gap-1 text-sm font-medium text-muted">
-          <Link href="/explore" className="rounded-full px-3 py-2 hover:bg-ink-2/5 hover:text-ink">Explore</Link>
-          <Link href="/analyze" className="hidden rounded-full px-3 py-2 hover:bg-ink-2/5 hover:text-ink sm:inline">Check a link</Link>
-          <Link href="/how-it-works" className="rounded-full px-3 py-2 hover:bg-ink-2/5 hover:text-ink">How it works</Link>
+    <header className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-4 px-6 py-5">
+      <Logo />
+      <div className="flex items-center gap-1">
+        <nav aria-label="Main" className="flex items-center text-sm text-muted">
+          <Link href="/explore" className="rounded-md px-3 py-2 text-muted no-underline hover:bg-hover hover:text-ink">Explore</Link>
+          <Link href="/analyze" className="hidden rounded-md px-3 py-2 text-muted no-underline hover:bg-hover hover:text-ink sm:inline">Check a link</Link>
+          <Link href="/how-it-works" className="rounded-md px-3 py-2 text-muted no-underline hover:bg-hover hover:text-ink">How it works</Link>
         </nav>
+        <span className="ml-2"><SignInButton /></span>
       </div>
     </header>
   );
