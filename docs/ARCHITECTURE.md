@@ -19,6 +19,8 @@ src/
     sessions/     5. Session lifecycle: lifetime, idle timeout, cleanup, diagnostics
     tools/        CLI→form adapters (declared inputs/options only)
     ai/           6. SetupAgent interface (disabled implementation)
+    workspace/    Workspace scenarios (settings, presets, diff text) + pure state logic
+    presence/     PresenceProvider contract, mock provider, cursor privacy prefs
     safety/       Workflow protection guards shared by all of the above
 public/demos/   Self-contained built-in web demos
 ```
@@ -40,6 +42,13 @@ public/demos/   Self-contained built-in web demos
 **Sessions.** `SessionManager` validates the `SandboxPolicy` when it is constructed. It caps concurrent sessions, ends sessions after the idle timeout (each poll counts as a heartbeat) or the hard lifetime, calls `terminate`, and forgets ended sessions after a retention window. The public view never includes diagnostics. Sessions are held in memory on `globalThis`; in production this would move to Redis or a database.
 
 **AI setup agent.** `SetupAgent` exposes `proposeSetup`, `explainFailure` and `proposeInterface`. An agent may only act through `AgentSandboxTools` (`readFile`, `listFiles`, `exec` inside one sandbox). Its proposals are checked by `assertCommandRespectsWorkflows` and by the sandbox policy before anything runs. README and issue text is untrusted and may contain prompt injection.
+
+## UI structure
+
+- Tokens live once in `src/app/globals.css` (`@theme`); components use token classes (`bg-surface`, `text-muted`, `bg-cat-images-bg`...), not raw hex.
+- Routes: `app/(site)` pages share the site header and footer; `app/(focus)` holds the project page and workspace, which draw their own headers.
+- The workspace shell (`components/workspace/Workspace.tsx`) is generic. A new scenario adds a file under `lib/workspace/` (settings, groups, presets, diff text) and registers a preview component in `PREVIEWS`. The project's catalog entry points at it with `workspace: "<scenario id>"`.
+- Presence: `PresenceRoot` owns a `PresenceProvider` and the cursor preferences. To go live, implement the provider over a real transport (WebSocket, Liveblocks, Yjs awareness) and select it in `PresenceRoot`. The contract requires that nothing is sent while sharing is off.
 
 ## Path to real execution
 
