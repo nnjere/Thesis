@@ -12,7 +12,7 @@ import type { Project } from "./types";
  *   runs a clearly labelled simulation.
  */
 
-const BUILT_IN_CREATOR = { name: "Openly prototype team (built-in demo)" };
+const BUILT_IN_CREATOR = { name: "Sandbox prototype team (built-in demo)" };
 
 const builtInDemos: Project[] = [
   {

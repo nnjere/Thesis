@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SimulatedTag, SourceBadge, StatusBadge, TypeBadge } from "@/components/Badges";
-import { ProjectArt } from "@/components/ProjectArt";
+import { SimulatedTag, SourceBadge, StatusBadge } from "@/components/Badges";
+import { FocusHeader } from "@/components/FocusHeader";
 import { ProjectCard, tryMode } from "@/components/ProjectCard";
-import { getCategory, getProject, listProjects, resolveAlternatives } from "@/lib/catalog";
+import { ProjectPreview } from "@/components/project/ProjectPreview";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Icon, PlayIcon } from "@/components/ui/Icon";
+import { card, cardHover, primaryButton, secondaryButton } from "@/components/ui/styles";
+import { IdeaTag, KindTag, OutlineChip } from "@/components/ui/Tag";
+import { getProject, listProjects, resolveAlternatives } from "@/lib/catalog";
 import { SOURCE_INFO, STATUS_INFO, TYPE_INFO } from "@/lib/catalog/labels";
 import type { Project } from "@/lib/catalog/types";
+import { getScenario } from "@/lib/workspace";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -19,55 +25,57 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return project ? { title: project.name, description: project.tagline } : {};
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-card border border-border bg-surface p-6">
-      <h2 className="text-lg font-bold tracking-tight">{title}</h2>
-      <div className="mt-3 text-ink-2">{children}</div>
-    </section>
-  );
+/** owner/repo · licence · language, leaving out anything we don't know. */
+function metaLine(project: Project): string {
+  const parts = [project.repo ? `${project.repo.owner}/${project.repo.name}` : "built-in demo", project.license, project.language];
+  return parts.filter(Boolean).join(" · ");
 }
 
-function TryPanel({ project }: { project: Project }) {
-  const mode = tryMode(project);
-  return (
-    <div className="rounded-card border border-border bg-surface p-6 shadow-sm">
-      <p className="text-sm font-semibold text-muted">How can you try it?</p>
-      <p className="mt-2 text-ink-2">{project.howToTry}</p>
+/** The "Sandbox" row of the property list: what happens when you open it here. */
+function sandboxLine(project: Project): string {
+  if (project.workspace) return getScenario(project.workspace)?.safetyNote ?? "Pretend data — nothing is changed for real";
+  switch (project.launch.kind) {
+    case "embedded-web-app":
+      return "Runs for real in a private frame in your browser";
+    case "tool-form":
+      return "Runs for real through a simple form";
+    case "simulated":
+      return "Simulated — nothing from this project runs here yet";
+    case "none":
+      return "Can't run in a browser";
+  }
+}
 
-      <div className="mt-5 space-y-2">
-        {mode === "real" && (
-          <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-5 py-3.5 text-lg font-semibold text-white shadow hover:bg-primary-ink">
-            ▶ Try it
-          </Link>
-        )}
-        {mode === "simulated" && (
-          <>
-            <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-md bg-ink px-5 py-3.5 text-lg font-semibold text-white hover:bg-ink-2">
-              Try it <SimulatedTag />
-            </Link>
-            <p className="text-xs text-muted">
-              Real sandboxes aren&apos;t connected in this prototype. You&apos;ll see how launching would work, but nothing from this project
-              will actually run.
-            </p>
-          </>
-        )}
-        {project.homepage && (
-          <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md border border-border-strong px-5 py-3 font-semibold hover:bg-ink-2/[0.03]">
-            {project.type === "library" ? "Visit the official site" : "Use the official version"} ↗
-          </a>
-        )}
-        {project.downloadUrl && (
-          <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md border border-border-strong px-5 py-3 font-semibold hover:bg-ink-2/[0.03]">
-            Download for your computer ↗
-          </a>
-        )}
-        {project.repo && (
-          <a href={project.repo.url} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold text-muted hover:text-ink">
-            See the original on GitHub ↗
-          </a>
-        )}
-      </div>
+function OpenButtons({ project }: { project: Project }) {
+  const mode = tryMode(project);
+  const openHref = project.workspace ? `/projects/${project.slug}/workspace` : `/projects/${project.slug}/try`;
+  return (
+    <div className="mt-1 flex flex-wrap gap-2.5">
+      {mode !== "none" && (
+        <Link href={openHref} className={primaryButton("lg")}>
+          <PlayIcon />
+          Open in sandbox
+          {mode === "simulated" && !project.workspace && <SimulatedTag />}
+        </Link>
+      )}
+      {mode === "none" && project.downloadUrl && (
+        <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className={primaryButton("lg")}>
+          <Icon name="download" />
+          Download for your computer
+        </a>
+      )}
+      {project.repo && (
+        <a href={project.repo.url} target="_blank" rel="noopener noreferrer" className={secondaryButton("lg")}>
+          <Icon name="code" />
+          View source
+        </a>
+      )}
+      {project.homepage && (
+        <a href={project.homepage} target="_blank" rel="noopener noreferrer" className={secondaryButton("lg")}>
+          <Icon name="external" />
+          {project.type === "library" ? "Official site" : "Official version"}
+        </a>
+      )}
     </div>
   );
 }
@@ -75,117 +83,141 @@ function TryPanel({ project }: { project: Project }) {
 export default async function ProjectPage({ params }: Params) {
   const project = getProject((await params).slug);
   if (!project) notFound();
-  const category = getCategory(project.category);
   const alternatives = resolveAlternatives(project);
-  const status = STATUS_INFO[project.status];
+  const scenario = getScenario(project.workspace);
+  const mode = tryMode(project);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted">
-        <Link href="/explore" className="hover:text-ink">Explore</Link> <span aria-hidden>/</span>{" "}
-        <Link href={`/explore?category=${category.id}`} className="hover:text-ink">{category.label}</Link>
-      </nav>
-
-      <header className="mt-4 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-center">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={project.status} size="md" />
-            <TypeBadge type={project.type} />
-            <SourceBadge source={project.source} />
+    <>
+      <FocusHeader crumb={project.name} />
+      <main id="main" className="mx-auto w-full max-w-[1120px] flex-1 px-6 pb-20">
+        <section className="grid items-center gap-12 py-14" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))" }}>
+          <div className="flex flex-col items-start gap-5">
+            <KindTag kind={project.kind} />
+            <h1 className="font-mono text-[clamp(40px,6vw,60px)] font-medium leading-[1.02] tracking-[-0.03em]">{project.name}</h1>
+            <p className="max-w-[480px] text-[19px] leading-normal text-ink-2">{project.description}</p>
+            <span className="font-mono text-[13px] text-muted">{metaLine(project)}</span>
+            <OpenButtons project={project} />
+            {mode === "simulated" && !project.workspace && (
+              <p className="max-w-[480px] text-xs text-muted">
+                Real sandboxes aren&apos;t connected yet, so opening this shows a labelled simulation. Nothing from the project runs.
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 text-[13px] text-muted">Good for</span>
+              {project.tags.slice(0, 3).map((t) => (
+                <OutlineChip key={t}>{t}</OutlineChip>
+              ))}
+            </div>
           </div>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{project.name}</h1>
-          <p className="mt-3 text-xl text-muted">{project.tagline}</p>
-        </div>
-        <div className="overflow-hidden rounded-card border border-border shadow-sm">
-          <ProjectArt seed={project.slug} preview={project.preview} className="aspect-[16/9] w-full" />
-        </div>
-      </header>
+          <ProjectPreview project={project} />
+        </section>
 
-      {project.source === "sample-listing" && (
-        <p className="mt-6 rounded-md border border-dashed border-border-strong bg-surface px-4 py-3 text-sm text-muted">
-          <strong className="text-ink">Sample listing.</strong> {SOURCE_INFO["sample-listing"].description}
-        </p>
-      )}
+        {project.source === "sample-listing" && (
+          <p className="mb-12 rounded-md border border-dashed border-border-strong bg-surface px-4 py-3 text-sm text-muted">
+            <strong className="text-ink">Sample listing.</strong> {SOURCE_INFO["sample-listing"].description}
+          </p>
+        )}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="space-y-6">
-          <Section title="What does this do?">
-            <p>{project.description}</p>
-          </Section>
-          <Section title="What can you do with it?">
-            <ul className="space-y-2">
+        {scenario && (
+          <section aria-labelledby="ideas" className="flex flex-col gap-5 pb-14">
+            <div className="flex flex-col gap-1">
+              <h2 id="ideas" className="text-[22px] font-[650] tracking-[-0.01em]">What people are suggesting</h2>
+              <p className="text-sm text-muted">Ideas others have tried in their sandbox. Open one to test it yourself.</p>
+            </div>
+            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))" }}>
+              {scenario.suggestions.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/projects/${project.slug}/workspace?suggestion=${s.id}`}
+                  className={`flex flex-col gap-2.5 p-[18px] text-ink no-underline hover:text-ink ${card} ${cardHover}`}
+                >
+                  <IdeaTag>{scenario.ideaTag}</IdeaTag>
+                  <span className="text-base font-semibold">{s.title}</span>
+                  <span className="text-sm leading-[1.45] text-ink-2">{s.description}</span>
+                  <span className="text-[13px] text-muted">Suggested by {s.by} · [EXAMPLE]</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="grid gap-12 border-t border-border py-12" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))" }}>
+          <div className="flex flex-col gap-3.5">
+            <h2 className="text-[22px] font-[650] tracking-[-0.01em]">What is it?</h2>
+            <p className="text-base leading-[1.65]">
+              {project.name} is a {TYPE_INFO[project.type].label.toLowerCase()}: {TYPE_INFO[project.type].plain.toLowerCase()}. It&apos;s
+              made by {project.creator.name.replace(/ \(built-in demo\)$/, "")}
+              {project.license ? <>, and shared under the {project.license} open-source licence, so anyone can read and remix it.</> : "."}
+            </p>
+            <p className="text-base leading-[1.65]">{project.howToTry}</p>
+            <h3 className="mt-3 text-base font-semibold">What you can do with it</h3>
+            <ul className="flex flex-col gap-1.5 text-[15px] text-ink-2">
               {project.uses.map((u) => (
                 <li key={u} className="flex gap-2">
-                  <span aria-hidden className="text-primary">✓</span>
+                  <Icon name="check" size={16} className="mt-1 flex-none text-primary" />
                   {u}
                 </li>
               ))}
             </ul>
-          </Section>
-          <Section title="What kind of project is it?">
-            <p>
-              <strong>{TYPE_INFO[project.type].label}:</strong> {TYPE_INFO[project.type].plain.toLowerCase()}.
-            </p>
-            {project.type === "library" && (
-              <p className="mt-2">
-                A library is a <strong>building block</strong>, not a standalone app. On its own there&apos;s nothing to open, but it lets
-                developers build things more easily.
-              </p>
-            )}
-            {project.type === "desktop-app" && (
-              <p className="mt-2">Apps like this need to be installed on your own device, so they can&apos;t run inside a web page.</p>
-            )}
-            {project.type === "cli-tool" && (
-              <p className="mt-2">
-                Command-line tools are normally used by typing commands. To try one here, it needs a simple form that exposes only the
-                options it can safely support.
-              </p>
-            )}
-          </Section>
-          <Section title="Things to know">
-            <ul className="list-disc space-y-1 pl-5">
+            <h3 className="mt-3 text-base font-semibold">Things to know</h3>
+            <ul className="list-disc space-y-1 pl-5 text-[15px] text-ink-2">
               {project.limitations.map((l) => (
                 <li key={l}>{l}</li>
               ))}
             </ul>
-          </Section>
-        </div>
-
-        <aside className="space-y-6">
-          <TryPanel project={project} />
-          <Section title="Project status">
-            <StatusBadge status={project.status} size="md" />
-            <p className="mt-2 text-sm">{status.description}</p>
-            <Link href="/how-it-works#statuses" className="mt-2 inline-block text-sm font-semibold text-primary hover:underline">
-              What the labels mean
-            </Link>
-          </Section>
-          <Section title="Who made it?">
-            {project.creator.url ? (
-              <a href={project.creator.url} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">
-                {project.creator.name} ↗
-              </a>
-            ) : (
-              <p className="font-semibold">{project.creator.name}</p>
-            )}
-            {project.license && <p className="mt-1 text-sm text-muted">Shared under the {project.license} open-source licence.</p>}
-            {project.source === "built-in-demo" && (
-              <p className="mt-1 text-sm text-muted">Bundled with this prototype to demonstrate the full experience. Not from GitHub.</p>
-            )}
-          </Section>
-        </aside>
-      </div>
-
-      {alternatives.length > 0 && (
-        <section className="mt-12" aria-labelledby="alternatives">
-          <h2 id="alternatives" className="text-xl font-bold tracking-tight">You can try instead</h2>
-          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {alternatives.map((p) => (
-              <ProjectCard key={p.slug} project={p} compact />
-            ))}
           </div>
+          <dl className={`grid content-start self-start gap-y-3 p-5 text-sm ${card}`} style={{ gridTemplateColumns: "120px 1fr" }}>
+            <dt className="text-muted">Made by</dt>
+            <dd>
+              {project.creator.url ? (
+                <a href={project.creator.url} target="_blank" rel="noopener noreferrer">{project.creator.name}</a>
+              ) : (
+                project.creator.name
+              )}
+            </dd>
+            <dt className="text-muted">Licence</dt>
+            <dd>{project.license ?? (project.source === "built-in-demo" ? "Part of this prototype" : "Not recorded — check the source")}</dd>
+            {project.language && (
+              <>
+                <dt className="text-muted">Written in</dt>
+                <dd>{project.language}</dd>
+              </>
+            )}
+            <dt className="text-muted">Source</dt>
+            <dd>
+              {project.repo ? (
+                <a href={project.repo.url} target="_blank" rel="noopener noreferrer" className="font-mono text-[13px]">
+                  {project.repo.owner}/{project.repo.name}
+                </a>
+              ) : (
+                <span className="font-mono text-[13px]">built-in demo</span>
+              )}
+            </dd>
+            <dt className="text-muted">Status</dt>
+            <dd className="flex flex-col items-start gap-1">
+              <StatusBadge status={project.status} />
+              <span className="text-xs text-muted">{STATUS_INFO[project.status].description}</span>
+            </dd>
+            <dt className="text-muted">Listing</dt>
+            <dd><SourceBadge source={project.source} /></dd>
+            <dt className="text-muted">Sandbox</dt>
+            <dd>{sandboxLine(project)}</dd>
+          </dl>
         </section>
-      )}
-    </div>
+
+        {alternatives.length > 0 && (
+          <section aria-labelledby="alternatives" className="border-t border-border pt-12">
+            <h2 id="alternatives" className="text-[22px] font-[650] tracking-[-0.01em]">You can try instead</h2>
+            <div className="mt-5 grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(300px, 100%), 1fr))" }}>
+              {alternatives.map((p) => (
+                <ProjectCard key={p.slug} project={p} />
+              ))}
+            </div>
+          </section>
+        )}
+      </main>
+      <SiteFooter />
+    </>
   );
 }

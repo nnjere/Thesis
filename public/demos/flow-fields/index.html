@@ -10,6 +10,7 @@
   body { margin: 0; background: #f6f5fb; color: #1e1b2e; display: flex; flex-wrap: wrap; min-height: 100vh; }
   aside { flex: 1 1 240px; max-width: 320px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
   main { flex: 3 1 360px; padding: 20px; display: flex; align-items: center; justify-content: center; }
+  @media (max-width: 640px) { main { order: -1; padding-bottom: 0; } aside { max-width: none; } }
   canvas { width: 100%; max-width: 760px; aspect-ratio: 4 / 3; border-radius: 16px; box-shadow: 0 10px 30px rgba(30,27,46,.15); background: #fff; }
   h1 { font-size: 20px; margin: 0; }
   p { margin: 0; font-size: 14px; color: #5b5770; line-height: 1.5; }
