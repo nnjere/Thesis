@@ -31,7 +31,7 @@ export function TechnicalDetails({ sessionId, providerLabel }: { sessionId: stri
         {error && <p className="text-muted">Couldn&apos;t load the details.</p>}
         {!entries && !error && <p className="text-muted">Loading…</p>}
         {entries && (
-          <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-xl bg-ink p-3 font-mono text-xs leading-relaxed text-white/85">
+          <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-md bg-ink p-3 font-mono text-xs leading-relaxed text-white/85">
             {entries.map((d) => `${d.at.slice(11, 19)} ${d.level.toUpperCase().padEnd(5)} ${d.message}`).join("\n") || "(no entries)"}
           </pre>
         )}

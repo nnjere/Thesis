@@ -90,7 +90,7 @@ export function AnalyzeView({ initialUrl, agentNote }: { initialUrl: string; age
 
       {state.phase === "loading" && (
         <div className="flex items-center gap-4 rounded-card border border-border bg-surface p-6" aria-busy="true" aria-live="polite">
-          <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-primary border-t-primary motion-reduce:animate-none" />
+          <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary motion-reduce:animate-none" />
           <div>
             <p className="font-semibold">Reading the project&apos;s public information…</p>
             <p className="text-sm text-muted">Looking at its description and setup files. This usually takes a few seconds.</p>
@@ -135,7 +135,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
           <SourceBadge source="analyzed" />
           {signals.archived && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Archived</span>}
         </div>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight">{metadata.fullName.split("/")[1]}</h2>
+        <h2 className="mt-3 text-3xl font-[650] tracking-[-0.01em]">{metadata.fullName.split("/")[1]}</h2>
         <p className="text-sm text-muted">
           by{" "}
           <a href={metadata.owner.url} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">
@@ -159,7 +159,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-card border border-border bg-surface p-6">
-          <h3 className="font-bold">How could you try it?</h3>
+          <h3 className="font-[650]">How could you try it?</h3>
           <p className="mt-2 text-ink-2">{STRATEGY_TEXT[c.strategy]}</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-2">
             {c.reasons.map((r) => (
@@ -168,7 +168,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
           </ul>
           <div className="mt-5 space-y-2">
             <button disabled className="w-full cursor-not-allowed rounded-md bg-hover px-5 py-3 font-semibold text-muted" aria-describedby="no-launch">
-              Try it (not available yet)
+              Open in sandbox (not available yet)
             </button>
             <p id="no-launch" className="text-xs text-muted">
               Launching new GitHub projects needs real, isolated sandboxes, which aren&apos;t connected in this prototype. Nothing from this
@@ -193,7 +193,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
         <div className="space-y-6">
           {c.caveats.length > 0 && (
             <div className="rounded-card border border-border bg-note-bg p-6 text-note-ink">
-              <h3 className="font-bold">Things to know</h3>
+              <h3 className="font-[650]">Things to know</h3>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
                 {c.caveats.map((r) => (
                   <li key={r}>{r}</li>
@@ -203,13 +203,13 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
           )}
           {signals.readme?.excerpt && (
             <div className="rounded-card border border-border bg-surface p-6">
-              <h3 className="font-bold">From the project&apos;s README</h3>
+              <h3 className="font-[650]">From the project&apos;s README</h3>
               <p className="mt-1 text-xs text-muted">Written by the project, shown as plain text.</p>
               <p className="mt-3 text-sm text-ink-2">{signals.readme.excerpt}</p>
             </div>
           )}
           <div className="rounded-card border border-dashed border-border-strong bg-surface p-6">
-            <h3 className="font-bold">AI-assisted setup</h3>
+            <h3 className="font-[650]">AI-assisted setup</h3>
             <p className="mt-2 text-sm text-muted">{agentNote}</p>
           </div>
         </div>

@@ -14,7 +14,7 @@ const SOURCES: DataSource[] = ["built-in-demo", "sample-listing", "analyzed"];
 function Card({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-24 rounded-card border border-border bg-surface p-6 sm:p-8">
-      <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+      <h2 className="text-xl font-[650] tracking-[-0.01em]">{title}</h2>
       <div className="mt-4 space-y-3 text-ink-2">{children}</div>
     </section>
   );
@@ -25,7 +25,7 @@ export default function HowItWorksPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 pt-10 sm:px-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">How it works &amp; what&apos;s real</h1>
+        <h1 className="text-3xl font-[650] tracking-[-0.01em] sm:text-4xl">How it works &amp; what&apos;s real</h1>
         <p className="mt-3 text-lg text-muted">
           We hide unnecessary technical complexity, but never a project&apos;s limitations. Here&apos;s exactly what this prototype does
           and doesn&apos;t do.
@@ -34,9 +34,9 @@ export default function HowItWorksPage() {
 
       <Card title="What's real in this prototype">
         <ul className="list-disc space-y-2 pl-5">
-          <li><strong>Built-in demos really run.</strong> Web demos run inside a locked-down frame in your browser; tool demos run on our server through a form. Each one is health-checked when you press “Try it”, and covered by automated tests.</li>
+          <li><strong>Built-in demos really run.</strong> Web demos run inside a locked-down frame in your browser; tool demos run on our server through a form. Each one is health-checked when you press “Open in sandbox”, and covered by automated tests.</li>
           <li><strong>Checking a GitHub link is real.</strong> We read the project&apos;s public information and a handful of setup files, and estimate what kind of project it is. Nothing is downloaded or run.</li>
-          <li><strong>Launching GitHub projects is simulated.</strong> No real sandbox infrastructure is connected yet. When you “Try” a sample listing, you&apos;ll see a clearly labelled simulation, and it will tell you nothing was run.</li>
+          <li><strong>Launching GitHub projects is simulated.</strong> No real sandbox infrastructure is connected yet. When you open a sample listing, you&apos;ll see a clearly labelled simulation, and it will tell you nothing was run.</li>
           <li><strong>Search is keyword matching</strong>, with a short list of synonyms. It isn&apos;t AI.</li>
           <li><strong>AI-assisted setup isn&apos;t switched on.</strong> The design has a place for it, with strict limits, but no AI model is connected.</li>
         </ul>
@@ -46,7 +46,7 @@ export default function HowItWorksPage() {
         <ul className="space-y-3">
           {STATUSES.map((s) => (
             <li key={s} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-              <span className="sm:w-48"><StatusBadge status={s} size="md" /></span>
+              <span className="sm:w-48 sm:flex-none"><StatusBadge status={s} size="md" /></span>
               <span>{STATUS_INFO[s].description}</span>
             </li>
           ))}
@@ -58,7 +58,7 @@ export default function HowItWorksPage() {
         <ul className="space-y-3">
           {SOURCES.map((s) => (
             <li key={s} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-              <span className="sm:w-48"><SourceBadge source={s} /></span>
+              <span className="sm:w-48 sm:flex-none"><SourceBadge source={s} /></span>
               <span>{SOURCE_INFO[s].description}</span>
             </li>
           ))}
@@ -69,7 +69,7 @@ export default function HowItWorksPage() {
         <ul className="space-y-3">
           {TYPES.map((t) => (
             <li key={t} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-              <span className="sm:w-48"><TypeBadge type={t} /></span>
+              <span className="sm:w-48 sm:flex-none"><TypeBadge type={t} /></span>
               <span>
                 {TYPE_INFO[t].plain}.{" "}
                 {t === "web-app" && "The ideal case: it can run in an isolated sandbox and be shown in a preview."}

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SimulatedTag, StatusBadge } from "@/components/Badges";
-import { ProjectArt } from "@/components/ProjectArt";
-import type { PreviewSpec, RunStatus } from "@/lib/catalog/types";
+import { KindTile } from "@/components/ProjectCard";
+import { Icon } from "@/components/ui/Icon";
+import type { ProjectKind, RunStatus } from "@/lib/catalog/types";
 import type { PublicSession } from "@/lib/sandbox/types";
 import type { ToolSpec } from "@/lib/tools/types";
 import { TechnicalDetails } from "./TechnicalDetails";
@@ -17,7 +18,7 @@ interface LaunchProject {
   status: RunStatus;
   homepage?: string;
   repoUrl?: string;
-  preview: PreviewSpec;
+  kind: ProjectKind;
 }
 
 interface Props {
@@ -159,8 +160,8 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
     return (
       <Shell>
         <div className="mx-auto max-w-xl rounded-card border border-border bg-surface p-8 text-center">
-          <p className="text-4xl" aria-hidden>⏸</p>
-          <h1 className="mt-3 text-2xl font-bold">Session ended</h1>
+          <span className="flex h-12 w-12 items-center justify-center rounded-card bg-hover text-ink-2"><Icon name="pause" size={22} /></span>
+          <h1 className="mt-3 text-2xl font-[650]">Session ended</h1>
           <p className="mt-2 text-muted">{reason} Anything you didn&apos;t download has been cleared.</p>
           <div className="mt-6 flex justify-center gap-3">
             <button onClick={restart} className="rounded-md bg-primary px-5 py-3 font-semibold text-white hover:bg-primary-ink">Start again</button>
@@ -185,7 +186,7 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
             </div>
           </div>
           <div className="p-6 sm:p-8">
-            <h1 className="text-2xl font-bold">This is where {project.name} would open</h1>
+            <h1 className="text-2xl font-[650]">This is where {project.name} would open</h1>
             <p className="mt-3 text-ink-2">
               Real sandboxes aren&apos;t connected in this prototype, so we haven&apos;t downloaded or started {project.name}. In a full
               version, you would now see <strong>{result.wouldShow}</strong>.
@@ -219,7 +220,7 @@ export function LaunchExperience({ project, toolSpec, alternatives }: Props) {
           <Link href={`/projects/${project.slug}`} className="text-sm font-semibold text-muted hover:text-ink">← {fullscreen ? "" : "Back"}</Link>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-lg font-bold">{project.name}</h1>
+              <h1 className="truncate text-lg font-[650]">{project.name}</h1>
               <StatusBadge status={project.status} />
             </div>
             <p className="flex items-center gap-1.5 text-xs text-muted">
@@ -285,17 +286,13 @@ function LoadingCard({ project, session }: { project: LaunchProject; session: Pu
         </div>
       )}
       <div className="overflow-hidden rounded-card border border-border bg-surface shadow-sm" aria-busy="true">
-        <div className="relative">
-          <ProjectArt seed={project.slug} preview={project.preview} className="aspect-[16/7] w-full opacity-90" showGlyph={false} />
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="pulse-ring relative grid h-16 w-16 place-items-center rounded-full bg-surface text-primary shadow-lg">
-              <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-primary border-t-primary motion-reduce:animate-none" />
-            </span>
-          </div>
+        <div className="dot-grid flex aspect-[16/7] w-full items-center justify-center gap-4">
+          <KindTile project={project} size={64} />
+          <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary motion-reduce:animate-none" />
         </div>
         <div className="p-6 sm:p-8">
           <p className="text-sm font-semibold text-muted">Starting {project.name}</p>
-          <p className="mt-1 text-2xl font-bold" aria-live="polite">
+          <p className="mt-1 text-2xl font-[650]" aria-live="polite">
             {active?.label ?? "Getting the project ready…"}
           </p>
           <ol className="mt-6 space-y-3">
@@ -325,7 +322,7 @@ function StepIcon({ status }: { status: string }) {
   if (status === "active")
     return (
       <span className="grid h-6 w-6 place-items-center" aria-label="In progress">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-primary motion-reduce:animate-none" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary/20 border-t-primary motion-reduce:animate-none" />
       </span>
     );
   return <span className="h-6 w-6 rounded-full border-2 border-border-strong" aria-label="Waiting" />;
@@ -349,8 +346,8 @@ function FailureCard(props: {
         </div>
       )}
       <div className="p-6 sm:p-8">
-        <p className="text-4xl" aria-hidden>🧩</p>
-        <h1 className="mt-3 text-2xl font-bold">{props.headline}</h1>
+        <span className="flex h-12 w-12 items-center justify-center rounded-card bg-note-bg text-note-ink"><Icon name="alert" size={22} /></span>
+        <h1 className="mt-3 text-2xl font-[650]">{props.headline}</h1>
         <p className="mt-3 text-ink-2">{props.explanation}</p>
         <p className="mt-3 text-ink-2">This isn&apos;t something you did wrong. Here&apos;s what you can do instead:</p>
         <ul className="mt-5 space-y-3">

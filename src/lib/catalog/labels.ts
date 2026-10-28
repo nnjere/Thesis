@@ -56,7 +56,7 @@ export const SOURCE_INFO: Record<DataSource, { label: string; description: strin
   "sample-listing": {
     label: "Sample listing",
     description:
-      "Describes a real project on GitHub, written by hand for this prototype. Nothing from it has been downloaded or run here, and “Try it” is a simulation.",
+      "Describes a real project on GitHub, written by hand for this prototype. Nothing from it has been downloaded or run here, and opening it shows a simulation.",
   },
   analyzed: {
     label: "Live analysis",

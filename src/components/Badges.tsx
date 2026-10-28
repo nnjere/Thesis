@@ -7,7 +7,7 @@ export function StatusBadge({ status, size = "sm" }: { status: RunStatus; size?:
   return (
     <span
       title={info.description}
-      className={`inline-flex items-center gap-1.5 rounded font-medium ${info.tone} ${size === "md" ? "px-2.5 py-1 text-[13px]" : "px-2 py-0.5 text-xs"}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded font-medium ${info.tone} ${size === "md" ? "px-2.5 py-1 text-[13px]" : "px-2 py-0.5 text-xs"}`}
     >
       <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${info.dot}`} />
       {info.label}
@@ -36,7 +36,7 @@ export function SourceBadge({ source }: { source: DataSource }) {
         ? "border border-dashed border-border-strong bg-surface text-muted"
         : "bg-idea-bg text-idea-ink";
   return (
-    <span title={info.description} className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${style}`}>
+    <span title={info.description} className={`inline-flex items-center whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${style}`}>
       {info.label}
     </span>
   );
@@ -45,7 +45,7 @@ export function SourceBadge({ source }: { source: DataSource }) {
 export function TypeBadge({ type }: { type: ProjectType | "unknown" }) {
   const info = TYPE_INFO[type];
   return (
-    <span title={info.plain} className="inline-flex items-center gap-1 rounded bg-hover px-2 py-0.5 text-xs font-medium text-ink-2">
+    <span title={info.plain} className="inline-flex items-center gap-1 whitespace-nowrap rounded bg-hover px-2 py-0.5 text-xs font-medium text-ink-2">
       <Icon name={info.icon} size={13} />
       {info.label}
     </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@/components/ui/Icon";
 import type { OptionValues, ToolResult, ToolSpec } from "@/lib/tools/types";
 
 function defaults(spec: ToolSpec): OptionValues {
@@ -72,7 +73,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
     <div className="mt-4 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
       <section className="rounded-card border border-border bg-surface p-6 shadow-sm" aria-labelledby="tool-input">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <label id="tool-input" htmlFor="tool-text" className="text-lg font-bold">{spec.input.label}</label>
+          <label id="tool-input" htmlFor="tool-text" className="text-lg font-[650]">{spec.input.label}</label>
           <div className="flex gap-2 text-sm">
             <button type="button" onClick={() => { setText(spec.input.sample); setFileName(null); }} className="rounded-full bg-hover px-3 py-1.5 font-semibold hover:bg-ink-2/10">
               Use example
@@ -93,7 +94,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
         />
 
         <fieldset className="mt-5 space-y-4">
-          <legend className="text-sm font-bold text-muted">Options</legend>
+          <legend className="text-sm font-[650] text-muted">Options</legend>
           {spec.options.map((opt) => (
             <div key={opt.id}>
               {opt.kind === "select" && (
@@ -102,7 +103,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                   <select
                     value={String(options[opt.id])}
                     onChange={(e) => setOptions((o) => ({ ...o, [opt.id]: e.target.value }))}
-                    className="mt-1 block w-full rounded-xl border border-border-strong bg-surface px-3 py-2 font-normal"
+                    className="mt-1 block w-full rounded-md border border-border-strong bg-surface px-3 py-2 font-normal"
                   >
                     {opt.choices.map((c) => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -128,7 +129,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                     value={String(options[opt.id])}
                     maxLength={opt.maxLength}
                     onChange={(e) => setOptions((o) => ({ ...o, [opt.id]: e.target.value }))}
-                    className="mt-1 block w-full rounded-xl border border-border-strong bg-surface px-3 py-2 font-normal"
+                    className="mt-1 block w-full rounded-md border border-border-strong bg-surface px-3 py-2 font-normal"
                   />
                 </label>
               )}
@@ -137,7 +138,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
           ))}
         </fieldset>
 
-        {error && <p className="mt-4 rounded-xl bg-diff-del-bg px-3 py-2 text-sm text-diff-del-ink" role="alert">{error}</p>}
+        {error && <p className="mt-4 rounded-md bg-diff-del-bg px-3 py-2 text-sm text-diff-del-ink" role="alert">{error}</p>}
         <button
           type="button"
           onClick={run}
@@ -149,7 +150,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
       </section>
 
       <section id="tool-result" className="rounded-card border border-border bg-surface p-6 shadow-sm" aria-live="polite" aria-labelledby="tool-results-title">
-        <h2 id="tool-results-title" className="text-lg font-bold">Results</h2>
+        <h2 id="tool-results-title" className="text-lg font-[650]">Results</h2>
         {!result ? (
           <p className="mt-3 text-muted">Add some text and press “{spec.actionLabel}”. Your results will appear here.</p>
         ) : (
@@ -171,7 +172,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                 <h3 className="font-semibold">{s.title}</h3>
                 <ul className="mt-2 space-y-2 text-sm">
                   {s.items.map((item, i) => (
-                    <li key={i} className="rounded-xl bg-bg px-3 py-2">{item}</li>
+                    <li key={i} className="rounded-md bg-bg px-3 py-2">{item}</li>
                   ))}
                 </ul>
               </div>
@@ -187,7 +188,8 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
             )}
             {result.download && (
               <button onClick={download} className="w-full rounded-md bg-ink px-5 py-3 font-semibold text-white hover:bg-ink-2">
-                ⬇ Download {result.download.filename}
+                <Icon name="download" />
+                Download {result.download.filename}
               </button>
             )}
           </div>
