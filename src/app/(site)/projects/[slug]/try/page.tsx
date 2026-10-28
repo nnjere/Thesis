@@ -21,21 +21,21 @@ export default async function TryPage({ params }: Params) {
   if (project.launch.kind === "none") {
     return (
       <div className="mx-auto max-w-3xl px-4 pt-12 sm:px-6">
-        <div className="rounded-3xl border border-black/5 bg-white p-8">
+        <div className="rounded-card border border-border bg-surface p-8">
           <h1 className="text-2xl font-bold tracking-tight">{project.name} can&apos;t be tried in the browser</h1>
-          <p className="mt-3 text-ink/85">{project.howToTry}</p>
+          <p className="mt-3 text-ink-2">{project.howToTry}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             {project.downloadUrl && (
-              <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-ink px-5 py-3 font-semibold text-white">
+              <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className="rounded-md bg-ink px-5 py-3 font-semibold text-white">
                 Download for your computer ↗
               </a>
             )}
             {project.homepage && (
-              <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-black/10 px-5 py-3 font-semibold">
+              <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="rounded-md border border-border-strong px-5 py-3 font-semibold">
                 Visit the official site ↗
               </a>
             )}
-            <Link href={`/projects/${project.slug}`} className="rounded-2xl px-5 py-3 font-semibold text-muted hover:text-ink">
+            <Link href={`/projects/${project.slug}`} className="rounded-md px-5 py-3 font-semibold text-muted hover:text-ink">
               Back to {project.name}
             </Link>
           </div>

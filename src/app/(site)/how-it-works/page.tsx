@@ -13,9 +13,9 @@ const SOURCES: DataSource[] = ["built-in-demo", "sample-listing", "analyzed"];
 
 function Card({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24 rounded-3xl border border-black/5 bg-white p-6 sm:p-8">
+    <section id={id} className="scroll-mt-24 rounded-card border border-border bg-surface p-6 sm:p-8">
       <h2 className="text-xl font-bold tracking-tight">{title}</h2>
-      <div className="mt-4 space-y-3 text-ink/85">{children}</div>
+      <div className="mt-4 space-y-3 text-ink-2">{children}</div>
     </section>
   );
 }
@@ -108,7 +108,7 @@ export default function HowItWorksPage() {
       </Card>
 
       <p className="pb-4 text-center">
-        <Link href="/explore?runnable=1" className="font-semibold text-brand-700 hover:underline">Find something you can try now →</Link>
+        <Link href="/explore?runnable=1" className="font-semibold text-primary hover:underline">Find something you can try now →</Link>
       </p>
     </div>
   );

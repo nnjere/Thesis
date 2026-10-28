@@ -60,7 +60,7 @@ export function AnalyzeView({ initialUrl, agentNote }: { initialUrl: string; age
           e.preventDefault();
           if (url.trim()) router.push(`/analyze?url=${encodeURIComponent(url.trim())}`);
         }}
-        className="flex flex-col gap-2 rounded-3xl border border-black/5 bg-white p-3 shadow-sm sm:flex-row"
+        className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3 shadow-sm sm:flex-row"
       >
         <label htmlFor="analyze-url" className="sr-only">GitHub project link</label>
         <input
@@ -72,16 +72,16 @@ export function AnalyzeView({ initialUrl, agentNote }: { initialUrl: string; age
           autoComplete="off"
           spellCheck={false}
           maxLength={300}
-          className="min-w-0 flex-1 rounded-2xl border border-black/10 px-4 py-3 font-mono text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+          className="min-w-0 flex-1 rounded-md border border-border-strong px-4 py-3 font-mono text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
         />
-        <button className="rounded-2xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-black">Check this project</button>
+        <button className="rounded-md bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-ink-2">Check this project</button>
       </form>
 
       {state.phase === "idle" && (
         <div className="flex flex-wrap gap-2 text-sm text-muted">
           <span>Examples:</span>
           {["github.com/excalidraw/excalidraw", "github.com/jqlang/jq", "github.com/streamlit/streamlit"].map((ex) => (
-            <Link key={ex} href={`/analyze?url=${encodeURIComponent(ex)}`} className="rounded-full border border-black/10 bg-white px-3 py-1 font-mono hover:text-ink">
+            <Link key={ex} href={`/analyze?url=${encodeURIComponent(ex)}`} className="rounded-full border border-border-strong bg-surface px-3 py-1 font-mono hover:text-ink">
               {ex}
             </Link>
           ))}
@@ -89,8 +89,8 @@ export function AnalyzeView({ initialUrl, agentNote }: { initialUrl: string; age
       )}
 
       {state.phase === "loading" && (
-        <div className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-6" aria-busy="true" aria-live="polite">
-          <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-brand-200 border-t-brand-600 motion-reduce:animate-none" />
+        <div className="flex items-center gap-4 rounded-card border border-border bg-surface p-6" aria-busy="true" aria-live="polite">
+          <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-primary border-t-primary motion-reduce:animate-none" />
           <div>
             <p className="font-semibold">Reading the project&apos;s public information…</p>
             <p className="text-sm text-muted">Looking at its description and setup files. This usually takes a few seconds.</p>
@@ -99,12 +99,12 @@ export function AnalyzeView({ initialUrl, agentNote }: { initialUrl: string; age
       )}
 
       {state.phase === "error" && (
-        <div className="rounded-3xl border border-rose-100 bg-white p-6" role="alert">
+        <div className="rounded-card border border-border bg-surface p-6" role="alert">
           <p className="text-lg font-semibold">{state.message}</p>
           {state.catalogSlug && (
             <p className="mt-2 text-muted">
               Good news: this project is in our catalog.{" "}
-              <Link href={`/projects/${state.catalogSlug}`} className="font-semibold text-brand-700 hover:underline">See its page</Link>.
+              <Link href={`/projects/${state.catalogSlug}`} className="font-semibold text-primary hover:underline">See its page</Link>.
             </p>
           )}
         </div>
@@ -120,15 +120,15 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
   return (
     <article className="space-y-6">
       {catalogSlug && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4">
-          <p className="font-medium text-brand-700">This project is in our catalog, with a plain-English guide.</p>
-          <Link href={`/projects/${catalogSlug}`} className="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary bg-primary-tint px-5 py-4">
+          <p className="font-medium text-primary">This project is in our catalog, with a plain-English guide.</p>
+          <Link href={`/projects/${catalogSlug}`} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-ink">
             Open its page
           </Link>
         </div>
       )}
 
-      <div className="rounded-3xl border border-black/5 bg-white p-6 sm:p-8">
+      <div className="rounded-card border border-border bg-surface p-6 sm:p-8">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={c.status} size="md" />
           <TypeBadge type={c.type} />
@@ -150,7 +150,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
             <span className="ml-2 align-middle text-xs text-muted">(the creators&apos; description)</span>
           </p>
         )}
-        <p className="mt-4 text-ink/85">{c.summary}</p>
+        <p className="mt-4 text-ink-2">{c.summary}</p>
         <p className="mt-2 text-xs text-muted">
           Our confidence in this guess: <strong>{c.confidence}</strong>. Status labels for new projects are always estimates. Only
           projects we&apos;ve actually tested are marked Verified.
@@ -158,16 +158,16 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-3xl border border-black/5 bg-white p-6">
+        <div className="rounded-card border border-border bg-surface p-6">
           <h3 className="font-bold">How could you try it?</h3>
-          <p className="mt-2 text-ink/85">{STRATEGY_TEXT[c.strategy]}</p>
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink/85">
+          <p className="mt-2 text-ink-2">{STRATEGY_TEXT[c.strategy]}</p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-2">
             {c.reasons.map((r) => (
               <li key={r}>{r}</li>
             ))}
           </ul>
           <div className="mt-5 space-y-2">
-            <button disabled className="w-full cursor-not-allowed rounded-2xl bg-black/10 px-5 py-3 font-semibold text-muted" aria-describedby="no-launch">
+            <button disabled className="w-full cursor-not-allowed rounded-md bg-hover px-5 py-3 font-semibold text-muted" aria-describedby="no-launch">
               Try it (not available yet)
             </button>
             <p id="no-launch" className="text-xs text-muted">
@@ -175,16 +175,16 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
               project has been run.
             </p>
             {metadata.homepage && (
-              <a href={metadata.homepage} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl border border-black/10 px-5 py-3 text-center font-semibold hover:bg-black/[0.03]">
+              <a href={metadata.homepage} target="_blank" rel="noopener noreferrer" className="block w-full rounded-md border border-border-strong px-5 py-3 text-center font-semibold hover:bg-ink-2/[0.03]">
                 Visit the project&apos;s website ↗
               </a>
             )}
             {analysis.releaseUrl && (
-              <a href={analysis.releaseUrl} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl border border-black/10 px-5 py-3 text-center font-semibold hover:bg-black/[0.03]">
+              <a href={analysis.releaseUrl} target="_blank" rel="noopener noreferrer" className="block w-full rounded-md border border-border-strong px-5 py-3 text-center font-semibold hover:bg-ink-2/[0.03]">
                 See the latest downloads ↗
               </a>
             )}
-            <a href={analysis.repo.url} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl px-5 py-2 text-center text-sm font-semibold text-muted hover:text-ink">
+            <a href={analysis.repo.url} target="_blank" rel="noopener noreferrer" className="block w-full rounded-md px-5 py-2 text-center text-sm font-semibold text-muted hover:text-ink">
               Open on GitHub ↗
             </a>
           </div>
@@ -192,7 +192,7 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
 
         <div className="space-y-6">
           {c.caveats.length > 0 && (
-            <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-950">
+            <div className="rounded-card border border-border bg-note-bg p-6 text-note-ink">
               <h3 className="font-bold">Things to know</h3>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
                 {c.caveats.map((r) => (
@@ -202,20 +202,20 @@ function AnalysisResult({ analysis, catalogSlug, agentNote }: { analysis: RepoAn
             </div>
           )}
           {signals.readme?.excerpt && (
-            <div className="rounded-3xl border border-black/5 bg-white p-6">
+            <div className="rounded-card border border-border bg-surface p-6">
               <h3 className="font-bold">From the project&apos;s README</h3>
               <p className="mt-1 text-xs text-muted">Written by the project, shown as plain text.</p>
-              <p className="mt-3 text-sm text-ink/85">{signals.readme.excerpt}</p>
+              <p className="mt-3 text-sm text-ink-2">{signals.readme.excerpt}</p>
             </div>
           )}
-          <div className="rounded-3xl border border-dashed border-black/10 bg-white p-6">
+          <div className="rounded-card border border-dashed border-border-strong bg-surface p-6">
             <h3 className="font-bold">AI-assisted setup</h3>
             <p className="mt-2 text-sm text-muted">{agentNote}</p>
           </div>
         </div>
       </div>
 
-      <details className="rounded-2xl border border-black/5 bg-black/[0.02] px-4 py-3 text-sm">
+      <details className="rounded-md border border-border bg-surface-sunken px-4 py-3 text-sm">
         <summary className="cursor-pointer select-none font-medium text-muted">Technical details (for developers)</summary>
         <div className="mt-3 grid gap-4 md:grid-cols-2">
           <div>

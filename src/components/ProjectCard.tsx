@@ -13,11 +13,11 @@ export function tryMode(project: Project): "real" | "simulated" | "none" {
 export function ProjectCard({ project, compact = false }: { project: Project; compact?: boolean }) {
   const mode = tryMode(project);
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+    <article className="group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
       <div className="relative">
         <ProjectArt seed={project.slug} preview={project.preview} className="aspect-[16/9] w-full" />
         {mode === "real" && (
-          <span className="absolute right-3 top-3 rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white shadow">
+          <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-white shadow">
             ▶ Try it now
           </span>
         )}
@@ -36,7 +36,7 @@ export function ProjectCard({ project, compact = false }: { project: Project; co
           <p className="mt-1 text-sm text-muted">{project.tagline}</p>
         </div>
         {!compact && (
-          <p className="text-sm text-ink/80">
+          <p className="text-sm text-ink-2">
             <span className="font-medium text-ink">You could: </span>
             {project.uses[0].charAt(0).toLowerCase() + project.uses[0].slice(1)}.
           </p>
@@ -49,13 +49,13 @@ export function ProjectCard({ project, compact = false }: { project: Project; co
           <span className="relative z-10 flex items-center gap-1.5">
             {mode === "simulated" && <SimulatedTag />}
             {mode === "none" ? (
-              <Link href={`/projects/${project.slug}`} className="rounded-full bg-black/5 px-3.5 py-1.5 text-sm font-semibold hover:bg-black/10">
+              <Link href={`/projects/${project.slug}`} className="rounded-full bg-hover px-3.5 py-1.5 text-sm font-semibold hover:bg-ink-2/10">
                 Learn more
               </Link>
             ) : (
               <Link
                 href={`/projects/${project.slug}/try`}
-                className={`rounded-full px-3.5 py-1.5 text-sm font-semibold text-white ${mode === "real" ? "bg-brand-600 hover:bg-brand-700" : "bg-ink/80 hover:bg-ink"}`}
+                className={`rounded-full px-3.5 py-1.5 text-sm font-semibold text-white ${mode === "real" ? "bg-primary hover:bg-primary-ink" : "bg-ink/80 hover:bg-ink"}`}
               >
                 Try it
               </Link>

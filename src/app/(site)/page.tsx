@@ -24,7 +24,7 @@ export default function HomePage() {
           <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-6xl">
             Explore open source.
             <br />
-            <span className="text-brand-600">No setup required.</span>
+            <span className="text-primary">No setup required.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg text-muted">
             Discover useful tools, creative experiments, and emerging technologies. Try them directly in your browser, without
@@ -48,8 +48,8 @@ export default function HomePage() {
             ["Try", "Press “Try it” and we handle the setup."],
             ["Explore", "Go deeper on GitHub when you're ready."],
           ].map(([title, body], i) => (
-            <li key={title} className="rounded-2xl border border-black/5 bg-white/70 p-4">
-              <p className="text-xs font-bold uppercase tracking-wider text-brand-600">Step {i + 1}</p>
+            <li key={title} className="rounded-md border border-border bg-surface p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary">Step {i + 1}</p>
               <p className="mt-1 font-semibold">{title}</p>
               <p className="text-sm text-muted">{body}</p>
             </li>
@@ -66,7 +66,7 @@ export default function HomePage() {
               These run for real, in your browser. <StatusBadge status="verified" /> means we&apos;ve tested them here.
             </p>
           </div>
-          <Link href="/explore?runnable=1" className="text-sm font-semibold text-brand-700 hover:underline">See all you can try →</Link>
+          <Link href="/explore?runnable=1" className="text-sm font-semibold text-primary hover:underline">See all you can try →</Link>
         </div>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {tryNow.slice(0, 3).map((p) => (
@@ -85,7 +85,7 @@ export default function HomePage() {
               <li key={c.id}>
                 <Link
                   href={`/explore?category=${c.id}`}
-                  className="flex h-full flex-col gap-1 rounded-2xl border border-black/5 bg-white p-4 transition hover:border-brand-200 hover:shadow-md"
+                  className="flex h-full flex-col gap-1 rounded-md border border-border bg-surface p-4 transition hover:border-primary hover:shadow-md"
                 >
                   <span aria-hidden className="text-2xl">{c.icon}</span>
                   <span className="font-semibold leading-tight">{c.label}</span>
@@ -117,10 +117,10 @@ export default function HomePage() {
           <div key={col.id} aria-labelledby={col.id}>
             <h2 id={col.id} className="text-xl font-bold tracking-tight">{col.title}</h2>
             {col.note && <p className="text-xs text-muted">{col.note}</p>}
-            <ul className="mt-4 divide-y divide-black/5 rounded-2xl border border-black/5 bg-white">
+            <ul className="mt-4 divide-y divide-border rounded-md border border-border bg-surface">
               {col.items.map((p) => (
                 <li key={p.slug}>
-                  <Link href={`/projects/${p.slug}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-black/[0.02]">
+                  <Link href={`/projects/${p.slug}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-ink-2/[0.02]">
                     <span>
                       <span className="font-semibold">{p.name}</span>
                       <span className="block text-sm text-muted">{p.tagline}</span>
@@ -136,7 +136,7 @@ export default function HomePage() {
 
       {/* Paste a link */}
       <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="paste">
-        <div className="rounded-3xl bg-ink p-6 text-white sm:p-10">
+        <div className="rounded-card bg-ink p-6 text-white sm:p-10">
           <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-center">
             <div>
               <h2 id="paste" className="text-2xl font-bold tracking-tight">Found something on GitHub?</h2>
@@ -145,7 +145,7 @@ export default function HomePage() {
                 public information. Nothing is downloaded or run.
               </p>
             </div>
-            <div className="rounded-2xl bg-white p-3 text-ink">
+            <div className="rounded-md bg-surface p-3 text-ink">
               <RepoLinkInput />
             </div>
           </div>

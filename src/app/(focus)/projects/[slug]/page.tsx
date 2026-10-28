@@ -21,9 +21,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-3xl border border-black/5 bg-white p-6">
+    <section className="rounded-card border border-border bg-surface p-6">
       <h2 className="text-lg font-bold tracking-tight">{title}</h2>
-      <div className="mt-3 text-ink/85">{children}</div>
+      <div className="mt-3 text-ink-2">{children}</div>
     </section>
   );
 }
@@ -31,19 +31,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function TryPanel({ project }: { project: Project }) {
   const mode = tryMode(project);
   return (
-    <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+    <div className="rounded-card border border-border bg-surface p-6 shadow-sm">
       <p className="text-sm font-semibold text-muted">How can you try it?</p>
-      <p className="mt-2 text-ink/85">{project.howToTry}</p>
+      <p className="mt-2 text-ink-2">{project.howToTry}</p>
 
       <div className="mt-5 space-y-2">
         {mode === "real" && (
-          <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-5 py-3.5 text-lg font-semibold text-white shadow hover:bg-brand-700">
+          <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-5 py-3.5 text-lg font-semibold text-white shadow hover:bg-primary-ink">
             ▶ Try it
           </Link>
         )}
         {mode === "simulated" && (
           <>
-            <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-ink px-5 py-3.5 text-lg font-semibold text-white hover:bg-black">
+            <Link href={`/projects/${project.slug}/try`} className="flex w-full items-center justify-center gap-2 rounded-md bg-ink px-5 py-3.5 text-lg font-semibold text-white hover:bg-ink-2">
               Try it <SimulatedTag />
             </Link>
             <p className="text-xs text-muted">
@@ -53,17 +53,17 @@ function TryPanel({ project }: { project: Project }) {
           </>
         )}
         {project.homepage && (
-          <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-2xl border border-black/10 px-5 py-3 font-semibold hover:bg-black/[0.03]">
+          <a href={project.homepage} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md border border-border-strong px-5 py-3 font-semibold hover:bg-ink-2/[0.03]">
             {project.type === "library" ? "Visit the official site" : "Use the official version"} ↗
           </a>
         )}
         {project.downloadUrl && (
-          <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-2xl border border-black/10 px-5 py-3 font-semibold hover:bg-black/[0.03]">
+          <a href={project.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md border border-border-strong px-5 py-3 font-semibold hover:bg-ink-2/[0.03]">
             Download for your computer ↗
           </a>
         )}
         {project.repo && (
-          <a href={project.repo.url} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-2xl px-5 py-2.5 text-sm font-semibold text-muted hover:text-ink">
+          <a href={project.repo.url} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold text-muted hover:text-ink">
             See the original on GitHub ↗
           </a>
         )}
@@ -96,13 +96,13 @@ export default async function ProjectPage({ params }: Params) {
           <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{project.name}</h1>
           <p className="mt-3 text-xl text-muted">{project.tagline}</p>
         </div>
-        <div className="overflow-hidden rounded-3xl border border-black/5 shadow-sm">
+        <div className="overflow-hidden rounded-card border border-border shadow-sm">
           <ProjectArt seed={project.slug} preview={project.preview} className="aspect-[16/9] w-full" />
         </div>
       </header>
 
       {project.source === "sample-listing" && (
-        <p className="mt-6 rounded-2xl border border-dashed border-black/15 bg-white px-4 py-3 text-sm text-muted">
+        <p className="mt-6 rounded-md border border-dashed border-border-strong bg-surface px-4 py-3 text-sm text-muted">
           <strong className="text-ink">Sample listing.</strong> {SOURCE_INFO["sample-listing"].description}
         </p>
       )}
@@ -116,7 +116,7 @@ export default async function ProjectPage({ params }: Params) {
             <ul className="space-y-2">
               {project.uses.map((u) => (
                 <li key={u} className="flex gap-2">
-                  <span aria-hidden className="text-brand-600">✓</span>
+                  <span aria-hidden className="text-primary">✓</span>
                   {u}
                 </li>
               ))}
@@ -157,7 +157,7 @@ export default async function ProjectPage({ params }: Params) {
           <Section title="Project status">
             <StatusBadge status={project.status} size="md" />
             <p className="mt-2 text-sm">{status.description}</p>
-            <Link href="/how-it-works#statuses" className="mt-2 inline-block text-sm font-semibold text-brand-700 hover:underline">
+            <Link href="/how-it-works#statuses" className="mt-2 inline-block text-sm font-semibold text-primary hover:underline">
               What the labels mean
             </Link>
           </Section>

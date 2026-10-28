@@ -4,12 +4,12 @@ import type { DataSource, ProjectType, RunStatus } from "@/lib/catalog/types";
 const TONES: Record<string, string> = {
   emerald: "bg-emerald-50 text-emerald-800 ring-emerald-600/20",
   sky: "bg-sky-50 text-sky-800 ring-sky-600/20",
-  amber: "bg-amber-50 text-amber-800 ring-amber-600/25",
+  amber: "bg-note-bg text-note-ink ring-amber-600/25",
   slate: "bg-slate-100 text-slate-700 ring-slate-500/20",
 };
 
 const DOTS: Record<string, string> = {
-  emerald: "bg-emerald-500",
+  emerald: "bg-primary",
   sky: "bg-sky-500",
   amber: "bg-amber-500",
   slate: "bg-slate-400",
@@ -34,9 +34,9 @@ export function SourceBadge({ source }: { source: DataSource }) {
   const info = SOURCE_INFO[source];
   const style =
     source === "built-in-demo"
-      ? "bg-brand-50 text-brand-700 ring-brand-500/20"
+      ? "bg-primary-tint text-primary ring-brand-500/20"
       : source === "sample-listing"
-        ? "bg-white text-muted ring-black/10 border-dashed"
+        ? "bg-surface text-muted ring-black/10 border-dashed"
         : "bg-fuchsia-50 text-fuchsia-800 ring-fuchsia-600/20";
   return (
     <span title={info.description} className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${style}`}>
@@ -57,7 +57,7 @@ export function TypeBadge({ type }: { type: ProjectType | "unknown" }) {
 
 export function SimulatedTag() {
   return (
-    <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-900">
+    <span className="inline-flex items-center rounded-full bg-note-bg px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-note-ink">
       Simulated
     </span>
   );

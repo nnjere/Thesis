@@ -25,9 +25,9 @@ export function RepoLinkInput({ initial = "", autoFocus = false }: { initial?: s
         autoComplete="off"
         spellCheck={false}
         maxLength={300}
-        className="min-w-0 flex-1 rounded-2xl border border-black/10 bg-white px-4 py-3 font-mono text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+        className="min-w-0 flex-1 rounded-md border border-border-strong bg-surface px-4 py-3 font-mono text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
       />
-      <button type="submit" className="rounded-2xl bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-black">
+      <button type="submit" className="rounded-md bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-ink-2">
         Check this project
       </button>
     </form>

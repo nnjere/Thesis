@@ -31,7 +31,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   const heading = q ? `Results for “${q}”` : category ? getCategory(category).label : "All projects";
 
   const chip = (active: boolean) =>
-    `rounded-full border px-3 py-1.5 text-sm font-medium transition ${active ? "border-brand-600 bg-brand-600 text-white" : "border-black/10 bg-white text-muted hover:border-brand-200 hover:text-ink"}`;
+    `rounded-full border px-3 py-1.5 text-sm font-medium transition ${active ? "border-primary bg-primary text-white" : "border-border-strong bg-surface text-muted hover:border-primary hover:text-ink"}`;
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-10 sm:px-6">
@@ -52,7 +52,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
           <Link href={hrefWith(current, { runnable: runnableOnly ? undefined : "1" })} className={chip(runnableOnly)} aria-pressed={runnableOnly}>
             {runnableOnly ? "✓ " : ""}Can try here for real
           </Link>
-          <span className="mx-1 h-5 w-px bg-black/10" aria-hidden />
+          <span className="mx-1 h-5 w-px bg-hover" aria-hidden />
           <Link href={hrefWith(current, { type: undefined })} className={chip(!type)}>Any kind</Link>
           {TYPES.map((t) => (
             <Link key={t} href={hrefWith(current, { type: t })} className={chip(type === t)} title={TYPE_INFO[t].plain}>
@@ -70,18 +70,18 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
       </div>
 
       {q && result.hits.length > 0 && result.approximate && (
-        <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status">
+        <p className="mt-4 rounded-md border border-border bg-note-bg px-4 py-3 text-sm text-note-ink" role="status">
           We didn&apos;t find a project that does exactly that. These are the closest matches in our catalog, so check the
           descriptions carefully.
         </p>
       )}
 
       {result.hits.length === 0 ? (
-        <div className="mt-10 rounded-3xl border border-dashed border-black/10 bg-white p-10 text-center">
+        <div className="mt-10 rounded-card border border-dashed border-border-strong bg-surface p-10 text-center">
           <p className="text-lg font-semibold">Nothing in our catalog matches that yet.</p>
           <p className="mt-2 text-muted">
             Try different words, remove a filter, or{" "}
-            <Link href="/analyze" className="font-semibold text-brand-700 hover:underline">paste a GitHub link</Link> if you already have a
+            <Link href="/analyze" className="font-semibold text-primary hover:underline">paste a GitHub link</Link> if you already have a
             project in mind.
           </p>
         </div>

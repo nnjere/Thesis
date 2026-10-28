@@ -70,14 +70,14 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
 
   return (
     <div className="mt-4 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <section className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm" aria-labelledby="tool-input">
+      <section className="rounded-card border border-border bg-surface p-6 shadow-sm" aria-labelledby="tool-input">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <label id="tool-input" htmlFor="tool-text" className="text-lg font-bold">{spec.input.label}</label>
           <div className="flex gap-2 text-sm">
-            <button type="button" onClick={() => { setText(spec.input.sample); setFileName(null); }} className="rounded-full bg-black/5 px-3 py-1.5 font-semibold hover:bg-black/10">
+            <button type="button" onClick={() => { setText(spec.input.sample); setFileName(null); }} className="rounded-full bg-hover px-3 py-1.5 font-semibold hover:bg-ink-2/10">
               Use example
             </button>
-            <label className="cursor-pointer rounded-full bg-black/5 px-3 py-1.5 font-semibold hover:bg-black/10">
+            <label className="cursor-pointer rounded-full bg-hover px-3 py-1.5 font-semibold hover:bg-ink-2/10">
               Upload file
               <input type="file" accept={spec.input.accept.join(",")} className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
             </label>
@@ -89,7 +89,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={spec.input.placeholder}
-          className="mt-3 h-64 w-full resize-y rounded-2xl border border-black/10 bg-paper/60 p-4 text-[15px] leading-relaxed outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+          className="mt-3 h-64 w-full resize-y rounded-md border border-border-strong bg-bg p-4 text-[15px] leading-relaxed outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"
         />
 
         <fieldset className="mt-5 space-y-4">
@@ -102,7 +102,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                   <select
                     value={String(options[opt.id])}
                     onChange={(e) => setOptions((o) => ({ ...o, [opt.id]: e.target.value }))}
-                    className="mt-1 block w-full rounded-xl border border-black/10 bg-white px-3 py-2 font-normal"
+                    className="mt-1 block w-full rounded-xl border border-border-strong bg-surface px-3 py-2 font-normal"
                   >
                     {opt.choices.map((c) => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -116,7 +116,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                     type="checkbox"
                     checked={Boolean(options[opt.id])}
                     onChange={(e) => setOptions((o) => ({ ...o, [opt.id]: e.target.checked }))}
-                    className="h-4 w-4 accent-brand-600"
+                    className="h-4 w-4 accent-primary"
                   />
                   {opt.label}
                 </label>
@@ -128,7 +128,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                     value={String(options[opt.id])}
                     maxLength={opt.maxLength}
                     onChange={(e) => setOptions((o) => ({ ...o, [opt.id]: e.target.value }))}
-                    className="mt-1 block w-full rounded-xl border border-black/10 bg-white px-3 py-2 font-normal"
+                    className="mt-1 block w-full rounded-xl border border-border-strong bg-surface px-3 py-2 font-normal"
                   />
                 </label>
               )}
@@ -137,18 +137,18 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
           ))}
         </fieldset>
 
-        {error && <p className="mt-4 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-800" role="alert">{error}</p>}
+        {error && <p className="mt-4 rounded-xl bg-diff-del-bg px-3 py-2 text-sm text-diff-del-ink" role="alert">{error}</p>}
         <button
           type="button"
           onClick={run}
           disabled={busy || !text.trim()}
-          className="mt-5 w-full rounded-2xl bg-brand-600 px-5 py-3.5 text-lg font-semibold text-white shadow hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-5 w-full rounded-md bg-primary px-5 py-3.5 text-lg font-semibold text-white shadow hover:bg-primary-ink disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? "Working…" : spec.actionLabel}
         </button>
       </section>
 
-      <section id="tool-result" className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm" aria-live="polite" aria-labelledby="tool-results-title">
+      <section id="tool-result" className="rounded-card border border-border bg-surface p-6 shadow-sm" aria-live="polite" aria-labelledby="tool-results-title">
         <h2 id="tool-results-title" className="text-lg font-bold">Results</h2>
         {!result ? (
           <p className="mt-3 text-muted">Add some text and press “{spec.actionLabel}”. Your results will appear here.</p>
@@ -158,7 +158,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
             {result.metrics && (
               <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {result.metrics.map((m) => (
-                  <div key={m.label} className="rounded-2xl bg-paper p-3" title={m.hint}>
+                  <div key={m.label} className="rounded-md bg-bg p-3" title={m.hint}>
                     <dt className="text-xs font-semibold text-muted">{m.label}</dt>
                     <dd className="mt-0.5 text-2xl font-bold">{m.value}</dd>
                     {m.hint && <dd className="text-[11px] text-muted">{m.hint}</dd>}
@@ -171,7 +171,7 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                 <h3 className="font-semibold">{s.title}</h3>
                 <ul className="mt-2 space-y-2 text-sm">
                   {s.items.map((item, i) => (
-                    <li key={i} className="rounded-xl bg-paper px-3 py-2">{item}</li>
+                    <li key={i} className="rounded-xl bg-bg px-3 py-2">{item}</li>
                   ))}
                 </ul>
               </div>
@@ -182,11 +182,11 @@ export function ToolRunner({ sessionId, spec, onSessionEnded }: { sessionId: str
                 srcDoc={result.previewHtml}
                 // Empty sandbox: no scripts, no forms, opaque origin.
                 sandbox=""
-                className="h-[420px] w-full rounded-2xl border border-black/10"
+                className="h-[420px] w-full rounded-md border border-border-strong"
               />
             )}
             {result.download && (
-              <button onClick={download} className="w-full rounded-2xl bg-ink px-5 py-3 font-semibold text-white hover:bg-black">
+              <button onClick={download} className="w-full rounded-md bg-ink px-5 py-3 font-semibold text-white hover:bg-ink-2">
                 ⬇ Download {result.download.filename}
               </button>
             )}

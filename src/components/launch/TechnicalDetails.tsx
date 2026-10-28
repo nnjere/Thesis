@@ -13,7 +13,7 @@ export function TechnicalDetails({ sessionId, providerLabel }: { sessionId: stri
 
   return (
     <details
-      className="mt-8 rounded-2xl border border-black/5 bg-black/[0.02] px-4 py-3 text-sm"
+      className="mt-8 rounded-md border border-border bg-surface-sunken px-4 py-3 text-sm"
       onToggle={async (e) => {
         if (!(e.currentTarget as HTMLDetailsElement).open || entries) return;
         try {
