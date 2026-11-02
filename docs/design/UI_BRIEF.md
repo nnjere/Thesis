@@ -144,6 +144,13 @@ Shown here for the Bluesky app (`bluesky-social/social-app`, MIT, TypeScript). U
 ### 4.3 Workspace (exploration canvas)
 This is an editor layout made approachable. The worked example is "Profiles, but more like Mastodon": someone testing Mastodon-style profile features on the Bluesky app's profile page.
 
+- **Layout: a fixed app shell, like a code editor.** The workspace fills exactly one screen height (`height: 100vh` or `100dvh`, `overflow: hidden`) as a flex column:
+  - Header, tab bar, **Activity panel** and status bar are `flex: 0 0 auto` and **always visible**.
+  - Only the middle content pane scrolls (`flex: 1 1 0; min-height: 0; overflow: auto`): the canvas, the Changes list or About.
+  - The sidebar scrolls on its own if it's too tall.
+  - Never let the page itself scroll on desktop, so the Activity panel can't be pushed off-screen.
+  - Below about 900 px wide, where the sidebar stacks, drop the fixed height, let the page scroll, and make the Activity panel `position: sticky; bottom: 0` so it stays pinned to the bottom of the screen.
+  - The Activity list is fixed at about 92 px tall and scrolls internally.
 - **Header:** a back link to the project; the H1 title of the suggestion with the meta line "your suggestion · N changes · edited just now"; presence avatars ("Maya is here"); the **Cursors** button; and a primary **Share suggestion** button, which changes the status from *Draft* to *Shared with maintainers*.
 - **Left sidebar (220 px, white):**
   - "Project" file list: **Canvas** (`profile preview`), **Changes** (`suggestion.diff`), **About** (`README.md`).
@@ -220,6 +227,7 @@ Visitors can turn off other people's cursors, and stop sharing their own.
 - [ ] Tokens are defined once in the repo's styling system, and the screens use tokens rather than raw hex values.
 - [ ] The Gallery, Project page and Workspace match §4 at 1440 px and work at 390 px with no horizontal page scroll.
 - [ ] The cards → project page → workspace navigation works.
+- [ ] The workspace never scrolls as a page on desktop: the Activity panel and status bar stay on screen at any window height, and only the middle pane scrolls. On phones, Activity sticks to the bottom.
 - [ ] Every workspace switch updates the preview; Original/Your version works; the Changes tab lists only the changed settings; Activity logs each change; Share moves Draft to Shared.
 - [ ] The cursor privacy popover works as described in §5, preferences persist, and "Show my cursor" off stops sending updates.
 - [ ] Reduced-motion is respected, and all of §6 passes.
